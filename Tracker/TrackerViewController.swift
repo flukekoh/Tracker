@@ -122,32 +122,38 @@ final class TrackerViewController: UIViewController {
         view.addSubview(trackerHeaderLabel)
         view.addSubview(searchTextField)
         view.addSubview(datePicker)
+        setupPlaceholderImage()
         view.addSubview(collectionView)
     }
     
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            addTrackerUIButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            addTrackerUIButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13),
-            addTrackerUIButton.heightAnchor.constraint(equalToConstant: 18),
-            addTrackerUIButton.widthAnchor.constraint(equalToConstant: 19),
+            addTrackerUIButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 6),
+            addTrackerUIButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 1),
+            addTrackerUIButton.heightAnchor.constraint(equalToConstant: 42),
+            addTrackerUIButton.widthAnchor.constraint(equalToConstant: 42),
             
             trackerHeaderLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            trackerHeaderLabel.topAnchor.constraint(equalTo: addTrackerUIButton.bottomAnchor, constant: 13),
+            trackerHeaderLabel.trailingAnchor.constraint(equalTo: datePicker.leadingAnchor, constant: 12),
+            trackerHeaderLabel.topAnchor.constraint(equalTo: addTrackerUIButton.bottomAnchor, constant: 1),
             trackerHeaderLabel.heightAnchor.constraint(equalToConstant: 41),
-            trackerHeaderLabel.widthAnchor.constraint(equalToConstant: 254),
             
-            searchTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
-            searchTextField.topAnchor.constraint(equalTo: trackerHeaderLabel.bottomAnchor),
-            searchTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+            searchTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            searchTextField.topAnchor.constraint(equalTo: trackerHeaderLabel.bottomAnchor, constant: 7),
+            searchTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
-            datePicker.widthAnchor.constraint(equalToConstant: 120),
+            datePicker.widthAnchor.constraint(equalToConstant: 77),
             datePicker.centerYAnchor.constraint(equalTo: trackerHeaderLabel.centerYAnchor),
             datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             
-            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            placeholderStack.heightAnchor.constraint(equalToConstant: 80),
+            placeholderStack.widthAnchor.constraint(equalToConstant: 80),
+            placeholderStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholderStack.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 35),
+            
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 24),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
     }
@@ -155,6 +161,8 @@ final class TrackerViewController: UIViewController {
     func setupPlaceholderImage() {
         placeholderStack.addArrangedSubview(placeholderImage)
         placeholderStack.addArrangedSubview(placeholderLabel)
+        
+        view.addSubview(placeholderStack)
     }
     
     @objc

@@ -65,9 +65,9 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
             confirmButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
             confirmButton.heightAnchor.constraint(equalToConstant: 60),
             
-            weekdaysTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            weekdaysTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             weekdaysTableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
-            weekdaysTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            weekdaysTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
             weekdaysTableView.bottomAnchor.constraint(equalTo: confirmButton.topAnchor)
         ])
     }
