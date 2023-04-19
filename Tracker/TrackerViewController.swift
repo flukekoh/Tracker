@@ -14,12 +14,32 @@ final class TrackerViewController: UIViewController {
     var currentDate: Date?
     var visibleCategories: [TrackerCategory]?
     
-    let trackerHeaderLabel = UILabel()
-    let addTrackerUIButton = UIButton.systemButton(
-        with: UIImage(named: "PlusButton")!,
-        target: self, action: #selector(didTapAddTrackerButton))
-    let searchTextField = UISearchTextField()
-//    let trackerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    // MARK: - UI
+    let trackerHeaderLabel: UILabel = {
+        let trackerHeaderLabel = UILabel()
+        trackerHeaderLabel.text = "Трекеры"
+        trackerHeaderLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        trackerHeaderLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        return trackerHeaderLabel
+    }()
+    
+    let addTrackerUIButton: UIButton = {
+        let addTrackerUIButton = UIButton.systemButton(
+            with: UIImage(named: "PlusButton")!,
+            target: self, action: #selector(didTapAddTrackerButton))
+        addTrackerUIButton.tintColor = .black
+        addTrackerUIButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        return addTrackerUIButton
+    }()
+    
+    let searchTextField: UISearchTextField = {
+        let searchTextField = UISearchTextField()
+        searchTextField.placeholder = "Поиск"
+        searchTextField.translatesAutoresizingMaskIntoConstraints = false
+        return searchTextField
+    }()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -39,68 +59,36 @@ final class TrackerViewController: UIViewController {
         return view
     }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        view.backgroundColor = .white
-        
-        setupPlusButton()
-        setupTrackersHeader()
-        setupSearchTextField()
-        setupDatePicker()
-        setupCollectionView()
-        setupPlaceholderImage()
-    }
-    
-    func setupPlaceholderImage() {
+    let placeholderImage: UIImageView = {
         let placeholderImage = UIImageView()
         placeholderImage.translatesAutoresizingMaskIntoConstraints = false
         placeholderImage.image = UIImage(named: "NoTrackersImage")
         
+        return placeholderImage
+    }()
+    
+    let placeholderLabel: UILabel = {
         let placeholderLabel = UILabel()
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
         placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
         placeholderLabel.text = "Что будем отслеживать?"
         placeholderLabel.textColor = .black
         
+        return placeholderLabel
+    }()
+    
+    let placeholderStack: UIStackView = {
         let placeholderStack = UIStackView()
         placeholderStack.translatesAutoresizingMaskIntoConstraints = false
         placeholderStack.axis = .vertical
         placeholderStack.alignment = .center
         placeholderStack.spacing = 8
         
-        placeholderStack.addArrangedSubview(placeholderImage)
-        placeholderStack.addArrangedSubview(placeholderLabel)
-    }
+        return placeholderStack
+    }()
     
-    func setupPlusButton() {
+    let datePicker: UIDatePicker = {
         
-        addTrackerUIButton.tintColor = .black
-        view.addSubview(addTrackerUIButton)
-        
-        addTrackerUIButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        addTrackerUIButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        addTrackerUIButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13).isActive = true
-        addTrackerUIButton.heightAnchor.constraint(equalToConstant: 18).isActive = true
-        addTrackerUIButton.widthAnchor.constraint(equalToConstant: 19).isActive = true
-    }
-    
-    func setupTrackersHeader() {
-        
-        trackerHeaderLabel.text = "Трекеры"
-        trackerHeaderLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
-        view.addSubview(trackerHeaderLabel)
-        
-        trackerHeaderLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        trackerHeaderLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        trackerHeaderLabel.topAnchor.constraint(equalTo: addTrackerUIButton.bottomAnchor, constant: 13).isActive = true
-        trackerHeaderLabel.heightAnchor.constraint(equalToConstant: 41).isActive = true
-        trackerHeaderLabel.widthAnchor.constraint(equalToConstant: 254).isActive = true
-    }
-    
-    func setupDatePicker() {
         let datePicker = UIDatePicker()
         
         datePicker.preferredDatePickerStyle = .compact
@@ -108,39 +96,71 @@ final class TrackerViewController: UIViewController {
         datePicker.locale = Locale(identifier: "ru_RU")
         datePicker.addTarget(self, action: #selector(didChangedDatePicker), for: .valueChanged)
         
-        view.addSubview(datePicker)
-        
         datePicker.translatesAutoresizingMaskIntoConstraints = false
+        return datePicker
+    }()
+    
+    // MARK: - LC
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        datePicker.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        datePicker.centerYAnchor.constraint(equalTo: trackerHeaderLabel.centerYAnchor).isActive = true
-        datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        setupView()
+        setupHierarchy()
+        setupLayout()
+        
+        setupPlaceholderImage()
+    }
+    
+    // MARK: - Setups
+    
+    private func setupView() {
+        view.backgroundColor = .white
+    }
+    
+    private func setupHierarchy() {
+        view.addSubview(addTrackerUIButton)
+        view.addSubview(trackerHeaderLabel)
+        view.addSubview(searchTextField)
+        view.addSubview(datePicker)
+        view.addSubview(collectionView)
+    }
+    
+    private func setupLayout() {
+        NSLayoutConstraint.activate([
+            addTrackerUIButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            addTrackerUIButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13),
+            addTrackerUIButton.heightAnchor.constraint(equalToConstant: 18),
+            addTrackerUIButton.widthAnchor.constraint(equalToConstant: 19),
+            
+            trackerHeaderLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            trackerHeaderLabel.topAnchor.constraint(equalTo: addTrackerUIButton.bottomAnchor, constant: 13),
+            trackerHeaderLabel.heightAnchor.constraint(equalToConstant: 41),
+            trackerHeaderLabel.widthAnchor.constraint(equalToConstant: 254),
+            
+            searchTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8),
+            searchTextField.topAnchor.constraint(equalTo: trackerHeaderLabel.bottomAnchor),
+            searchTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+            
+            datePicker.widthAnchor.constraint(equalToConstant: 120),
+            datePicker.centerYAnchor.constraint(equalTo: trackerHeaderLabel.centerYAnchor),
+            datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            
+            collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+        ])
+    }
+    
+    func setupPlaceholderImage() {
+        placeholderStack.addArrangedSubview(placeholderImage)
+        placeholderStack.addArrangedSubview(placeholderLabel)
     }
     
     @objc
     func didChangedDatePicker(_ sender: UIDatePicker) {
         currentDate = sender.date
         collectionView.reloadData()
-    }
-    
-    func setupSearchTextField() {
-        
-        searchTextField.placeholder = "Поиск"
-        view.addSubview(searchTextField)
-        
-        searchTextField.translatesAutoresizingMaskIntoConstraints = false
-        
-        searchTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8).isActive = true
-        searchTextField.topAnchor.constraint(equalTo: trackerHeaderLabel.bottomAnchor).isActive = true
-        searchTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8).isActive = true
-    }
-    
-    func setupCollectionView() {
-        view.addSubview(collectionView)
-        collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
-        collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor).isActive = true
-        collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
-        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
     
     @objc

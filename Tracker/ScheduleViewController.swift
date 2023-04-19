@@ -12,48 +12,17 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
     let daysOfTheWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
     // Массив для хранения состояний переключателей (включено или выключено)
     var switchStates: [Bool] = [false, false, false, false, false, false, false]
-    // Создаем UITableView
-    var weekdaysTableView = UITableView()
-    var confirmButton = UIButton(type: .system)
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        title = "Расписание"
-        view.backgroundColor = .white
+    // MARK: - UI
+    var weekdaysTableView: UITableView = {
+        let weekdaysTableView = UITableView(frame: .zero, style: .insetGrouped)
         
-        addConfirmButton()
-        setupWeekSchedule()
-    }
-    
-    
-    func setupWeekSchedule() {
-        // Массив с названиями дней недели
-        weekdaysTableView = UITableView(frame: .zero, style: .insetGrouped)
-        // Устанавливаем делегат и источник данных для UITableView
-        weekdaysTableView.delegate = self
-        weekdaysTableView.dataSource = self
-        
-        // Регистрируем ячейку для использования в UITableView
-        weekdaysTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
-        
-        // Добавляем UITableView на экран
-        view.addSubview(weekdaysTableView)
-        
-        // Устанавливаем ограничения с помощью Auto Layout
         weekdaysTableView.translatesAutoresizingMaskIntoConstraints = false
-        
-        weekdaysTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        weekdaysTableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16).isActive = true
-        weekdaysTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        weekdaysTableView.bottomAnchor.constraint(equalTo: confirmButton.topAnchor).isActive = true
-        
-        //
-    }
+        return weekdaysTableView
+    }()
     
-    func addConfirmButton() {
-        
-        view.addSubview(confirmButton)
-        
+    var confirmButton: UIButton = {
+        var confirmButton = UIButton(type: .system)
         confirmButton.setTitle("Готово", for: .normal)
         confirmButton.backgroundColor = .black
         
@@ -65,10 +34,51 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
         
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         
-        confirmButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        confirmButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        confirmButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
-        confirmButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        return confirmButton
+    }()
+    
+    // MARK: - LC
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupView()
+        setupHierarchy()
+        setupLayout()
+        
+    }
+    
+    // MARK: - Setups
+    
+    private func setupView() {
+        title = "Расписание"
+        view.backgroundColor = .white
+    }
+    private func setupHierarchy() {
+        view.addSubview(confirmButton)
+        
+        setupWeekSchedule()
+    }
+    private func setupLayout() {
+        NSLayoutConstraint.activate([
+            confirmButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            confirmButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            confirmButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
+            confirmButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            weekdaysTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            weekdaysTableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
+            weekdaysTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            weekdaysTableView.bottomAnchor.constraint(equalTo: confirmButton.topAnchor)
+        ])
+    }
+    
+    func setupWeekSchedule() {
+        
+        weekdaysTableView.delegate = self
+        weekdaysTableView.dataSource = self
+        weekdaysTableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        
+        view.addSubview(weekdaysTableView)
     }
     
     @objc
@@ -125,24 +135,3 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
     }
 }
 
-
-
-//import UIKit
-//
-//class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-//
-//
-//
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//
-//        // Устанавливаем заголовок экрана
-//        title = "Дни недели"
-//
-//
-//    }
-//
-//    // MARK: - UITableViewDataSource
-//
-//
-//}

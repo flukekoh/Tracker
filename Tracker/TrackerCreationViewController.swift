@@ -25,35 +25,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             return ["Категория"]
         }
     }
-    
-    init(choice: Choice) {
-        self.choice = choice
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError()
-    }
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        view.backgroundColor = .white
-        title = "Новая привычка"
-        
-        setupHierarchy()
-        setupLayout()
-        
-        setupEmojis()
-        setupColors()
-        setupButtonsStack()
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
-        return true
-    }
-    
+    // MARK: - UI
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.delegate = self
@@ -74,6 +46,82 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         return textField
     }()
     
+    let cancelButton: UIButton = {
+        let cancelButton = UIButton()
+        
+        cancelButton.setTitleColor(.red, for: .normal)
+        cancelButton.layer.borderColor = UIColor.red.cgColor
+        cancelButton.layer.borderWidth = 1
+        cancelButton.setTitle("Отменить", for: .normal)
+        //        button.backgroundColor = color
+        cancelButton.setTitleColor(UIColor.red, for: .normal)
+        cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        cancelButton.layer.cornerRadius = 24
+        
+        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        
+        cancelButton.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
+        return cancelButton
+    }()
+    
+    let confirmButton: UIButton = {
+        let confirmButton = UIButton()
+        
+        confirmButton.backgroundColor = .gray
+        confirmButton.setTitleColor(.white, for: .normal)
+        confirmButton.layer.borderColor = UIColor.red.cgColor
+        confirmButton.layer.borderWidth = 1
+        confirmButton.setTitle("Создать", for: .normal)
+        //        button.backgroundColor = color
+        
+        confirmButton.translatesAutoresizingMaskIntoConstraints = false
+        confirmButton.setTitleColor(.white, for: .normal)
+        confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        confirmButton.layer.cornerRadius = 24
+        
+        confirmButton.addTarget(self, action: #selector(didTapConfirmButton), for: .touchUpInside)
+        confirmButton.isEnabled = false
+        
+        return confirmButton
+    }()
+    
+    let buttonsStack: UIStackView = {
+        let buttonsStack = UIStackView()
+        buttonsStack.translatesAutoresizingMaskIntoConstraints = false
+        buttonsStack.spacing = 8
+        buttonsStack.distribution = .fillEqually
+        
+        return buttonsStack
+    }()
+    
+    // MARK: - LC
+    init(choice: Choice) {
+        self.choice = choice
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupView()
+        setupHierarchy()
+        setupLayout()
+        
+        setupEmojis()
+        setupColors()
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        textField.resignFirstResponder()
+        return true
+    }
+    
+    
+    
     @objc
     private func didChangedLabelTextField(_ sender: UITextField) {
         //        guard let text = sender.text else { return }
@@ -84,17 +132,27 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         //            isValidationMessageVisible = false
         //        }
     }
+    // MARK: - Setups
+    
+    private func setupView() {
+        view.backgroundColor = .white
+        title = "Новая привычка"
+    }
     
     private func setupHierarchy() {
         view.addSubview(textField)
         view.addSubview(tableView)
+        
+        view.addSubview(buttonsStack)
+        buttonsStack.addArrangedSubview(cancelButton)
+        buttonsStack.addArrangedSubview(confirmButton)
     }
     
     private func setupLayout() {
-        textField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24).isActive = true
-        textField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        textField.heightAnchor.constraint(equalToConstant: 75).isActive = true
+        //        textField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
+        //        textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24).isActive = true
+        //        textField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+        //        textField.heightAnchor.constraint(equalToConstant: 75).isActive = true
         
         NSLayoutConstraint.activate([
             textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -105,7 +163,12 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             tableView.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            
+            buttonsStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            buttonsStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            buttonsStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            buttonsStack.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -159,59 +222,6 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         
     }
     func setupColors(){
-        
-    }
-    
-    func setupButtonsStack() {
-        
-        let cancelButton = UIButton()
-        
-        cancelButton.setTitleColor(.red, for: .normal)
-        cancelButton.layer.borderColor = UIColor.red.cgColor
-        cancelButton.layer.borderWidth = 1
-        cancelButton.setTitle("Отменить", for: .normal)
-        //        button.backgroundColor = color
-        
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
-        cancelButton.setTitleColor(UIColor.red, for: .normal)
-        cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        cancelButton.layer.cornerRadius = 24
-        
-        cancelButton.addTarget(self, action: #selector(didTapCancelButton), for: .touchUpInside)
-        
-        let confirmButton = UIButton()
-        
-        confirmButton.backgroundColor = .gray
-        confirmButton.setTitleColor(.white, for: .normal)
-        confirmButton.layer.borderColor = UIColor.red.cgColor
-        confirmButton.layer.borderWidth = 1
-        confirmButton.setTitle("Создать", for: .normal)
-        //        button.backgroundColor = color
-        
-        confirmButton.translatesAutoresizingMaskIntoConstraints = false
-        confirmButton.setTitleColor(.white, for: .normal)
-        confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        confirmButton.layer.cornerRadius = 24
-        
-        confirmButton.addTarget(self, action: #selector(didTapConfirmButton), for: .touchUpInside)
-        confirmButton.isEnabled = false
-        
-        let buttonsStack = UIStackView()
-        buttonsStack.translatesAutoresizingMaskIntoConstraints = false
-        buttonsStack.spacing = 8
-        buttonsStack.distribution = .fillEqually
-        
-        view.addSubview(buttonsStack)
-        buttonsStack.addArrangedSubview(cancelButton)
-        buttonsStack.addArrangedSubview(confirmButton)
-        
-        buttonsStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
-        buttonsStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
-        buttonsStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
-        buttonsStack.heightAnchor.constraint(equalToConstant: 60).isActive = true
-    }
-    
-    func setupCreateButton(){
         
     }
     

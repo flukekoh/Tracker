@@ -10,39 +10,9 @@ import UIKit
 
 class TrackerTypeViewController: UIViewController {
     
-    let habitUIButton = UIButton()
-    let unregularEventUIButton = UIButton()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        view.backgroundColor = .white
-        title = "Создание трекера"
-        
-        setupHabit()
-        setupUnregularEvent()
-        setupStack()
-    }
-    
-    func setupStack(){
-        
-        let buttonsStack = UIStackView()
-        
-        buttonsStack.translatesAutoresizingMaskIntoConstraints = false
-        buttonsStack.axis = .vertical
-        buttonsStack.spacing = 16
-        
-        view.addSubview(buttonsStack)
-        
-        buttonsStack.addArrangedSubview(habitUIButton)
-        buttonsStack.addArrangedSubview(unregularEventUIButton)
-        
-        buttonsStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
-        buttonsStack.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor).isActive = true
-        buttonsStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
-    }
-    
-    func setupHabit(){
-        
+    // MARK: - UI
+    let habitUIButton: UIButton = {
+        let habitUIButton = UIButton()
         habitUIButton.backgroundColor = .black
         habitUIButton.setTitle("Привычка", for: .normal)
         habitUIButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
@@ -50,15 +20,13 @@ class TrackerTypeViewController: UIViewController {
         habitUIButton.layer.cornerRadius = 24
         habitUIButton.addTarget(self, action: #selector(habitUIButtonTapped), for: .touchUpInside)
         
-        view.addSubview(habitUIButton)
-        
         habitUIButton.translatesAutoresizingMaskIntoConstraints = false
         
-        habitUIButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
-    }
+        return habitUIButton
+    }()
     
-    func setupUnregularEvent(){
-        
+    let unregularEventUIButton: UIButton = {
+        let unregularEventUIButton = UIButton()
         unregularEventUIButton.backgroundColor = .black
         unregularEventUIButton.setTitle("Нерегулярное событие", for: .normal)
         unregularEventUIButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
@@ -66,11 +34,55 @@ class TrackerTypeViewController: UIViewController {
         unregularEventUIButton.layer.cornerRadius = 24
         unregularEventUIButton.addTarget(self, action: #selector(unregularButtonTapped), for: .touchUpInside)
         
-        view.addSubview(unregularEventUIButton)
-        
         unregularEventUIButton.translatesAutoresizingMaskIntoConstraints = false
         
-        unregularEventUIButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        return unregularEventUIButton
+    }()
+    
+    let buttonsStack: UIStackView = {
+        let buttonsStack = UIStackView()
+        buttonsStack.axis = .vertical
+        buttonsStack.spacing = 16
+        
+        buttonsStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        return buttonsStack
+    }()
+    
+    // MARK: - LC
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        setupView()
+        setupHierarchy()
+        setupLayout()
+    }
+    
+    // MARK: - Setups
+    
+    func setupView() {
+        view.backgroundColor = .white
+        title = "Создание трекера"
+    }
+    
+    func setupHierarchy() {
+        buttonsStack.addArrangedSubview(habitUIButton)
+        buttonsStack.addArrangedSubview(unregularEventUIButton)
+        //        view.addSubview(habitUIButton)
+        //        view.addSubview(unregularEventUIButton)
+        view.addSubview(buttonsStack)
+    }
+    
+    func setupLayout() {
+        NSLayoutConstraint.activate([
+            habitUIButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            unregularEventUIButton.heightAnchor.constraint(equalToConstant: 60),
+            
+            buttonsStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            buttonsStack.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor),
+            buttonsStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20)
+        ])
     }
     
     @objc
