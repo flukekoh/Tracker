@@ -9,57 +9,81 @@ import Foundation
 import UIKit
 
 class TrackerTypeViewController: UIViewController {
+    
+    let habitUIButton = UIButton()
+    let unregularEventUIButton = UIButton()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .white
-        addHeader()
-        addHabit()
-        addUnregularEvent()
+        title = "Создание трекера"
+        
+        setupHabit()
+        setupUnregularEvent()
+        setupStack()
     }
     
-    func addHeader(){
-        let headerLabel = UILabel()
-        headerLabel.text = "Создание трекера"
+    func setupStack(){
         
-        view.addSubview(headerLabel)
+        let buttonsStack = UIStackView()
         
-        headerLabel.translatesAutoresizingMaskIntoConstraints = false
+        buttonsStack.translatesAutoresizingMaskIntoConstraints = false
+        buttonsStack.axis = .vertical
+        buttonsStack.spacing = 16
         
-        headerLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
-        headerLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
+        view.addSubview(buttonsStack)
+        
+        buttonsStack.addArrangedSubview(habitUIButton)
+        buttonsStack.addArrangedSubview(unregularEventUIButton)
+        
+        buttonsStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20).isActive = true
+        buttonsStack.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor).isActive = true
+        buttonsStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20).isActive = true
     }
     
-    func addHabit(){
-        let habitUIButton = UIButton()
-        habitUIButton.titleLabel?.text = "Привычка"
+    func setupHabit(){
+        
         habitUIButton.backgroundColor = .black
+        habitUIButton.setTitle("Привычка", for: .normal)
+        habitUIButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         habitUIButton.titleLabel?.textColor = .white
+        habitUIButton.layer.cornerRadius = 24
+        habitUIButton.addTarget(self, action: #selector(habitUIButtonTapped), for: .touchUpInside)
+        
         view.addSubview(habitUIButton)
         
         habitUIButton.translatesAutoresizingMaskIntoConstraints = false
         
-        habitUIButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 100).isActive = true
-        habitUIButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        habitUIButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        habitUIButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        habitUIButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
     
-    func addUnregularEvent(){
+    func setupUnregularEvent(){
         
-        let unregularEventUIButton = UIButton()
-        unregularEventUIButton.titleLabel?.text = "Нерегулярное событие"
         unregularEventUIButton.backgroundColor = .black
+        unregularEventUIButton.setTitle("Нерегулярное событие", for: .normal)
+        unregularEventUIButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         unregularEventUIButton.titleLabel?.textColor = .white
+        unregularEventUIButton.layer.cornerRadius = 24
+        unregularEventUIButton.addTarget(self, action: #selector(unregularButtonTapped), for: .touchUpInside)
         
         view.addSubview(unregularEventUIButton)
         
         unregularEventUIButton.translatesAutoresizingMaskIntoConstraints = false
         
-        unregularEventUIButton.topAnchor.constraint(equalTo: view.topAnchor, constant: 150).isActive = true
-        unregularEventUIButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40).isActive = true
-        unregularEventUIButton.heightAnchor.constraint(equalToConstant: 20).isActive = true
-        unregularEventUIButton.widthAnchor.constraint(equalToConstant: 100).isActive = true
+        unregularEventUIButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
     }
     
+    @objc
+    func habitUIButtonTapped() {
+        let trackerCreationViewController = TrackerCreationViewController(choice: .regular)
+        let navController = UINavigationController(rootViewController: trackerCreationViewController)
+        self.navigationController?.pushViewController(trackerCreationViewController, animated: true)
+    }
+    
+    @objc private func unregularButtonTapped() {
+        let trackerCreationViewController = TrackerCreationViewController(choice: .unregular)
+        let navController = UINavigationController(rootViewController: trackerCreationViewController)
+        self.navigationController?.pushViewController(trackerCreationViewController, animated: true)
+    }
     
 }

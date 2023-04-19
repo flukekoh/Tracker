@@ -7,5 +7,6 @@
 
 import Foundation
 import UIKit
+
 final class TrackerCategoryLabel: UICollectionReusableView {
 }

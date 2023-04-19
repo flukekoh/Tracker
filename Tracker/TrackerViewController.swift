@@ -10,64 +10,94 @@ import UIKit
 
 final class TrackerViewController: UIViewController {
     
-//    var categories: [TrackerCategory]
-//    var completedTrackers: [TrackerRecord]
-//    var currentDate: Date
-//    var visibleCategories: [TrackerCategory]
-//
+    var completedTrackers: [TrackerRecord]?
+    var currentDate: Date?
+    var visibleCategories: [TrackerCategory]?
     
     let trackerHeaderLabel = UILabel()
+    let addTrackerUIButton = UIButton.systemButton(
+        with: UIImage(named: "PlusButton")!,
+        target: self, action: #selector(didTapAddTrackerButton))
+    let searchTextField = UISearchTextField()
+//    let trackerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: (self.view.frame.width / 2) - 10, height: 200)
+        layout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 5)
+        layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 50)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        view.backgroundColor = .white
+        view.register(
+            TrackerCell.self,
+            forCellWithReuseIdentifier: TrackerCell.identifier
+        )
+        view.register(TrackerHeader.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: TrackerHeader.identifier)
+        view.dataSource = self
+        view.delegate = self
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         view.backgroundColor = .white
         
-        setupTrackersHeader()
-        
         setupPlusButton()
-        
+        setupTrackersHeader()
         setupSearchTextField()
-        
         setupDatePicker()
-        
         setupCollectionView()
+        setupPlaceholderImage()
     }
     
-    func setupTrackersHeader() {
-       
+    func setupPlaceholderImage() {
+        let placeholderImage = UIImageView()
+        placeholderImage.translatesAutoresizingMaskIntoConstraints = false
+        placeholderImage.image = UIImage(named: "NoTrackersImage")
         
-        trackerHeaderLabel.text = "Трекеры"
+        let placeholderLabel = UILabel()
+        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+        placeholderLabel.text = "Что будем отслеживать?"
+        placeholderLabel.textColor = .black
         
-        view.addSubview(trackerHeaderLabel)
+        let placeholderStack = UIStackView()
+        placeholderStack.translatesAutoresizingMaskIntoConstraints = false
+        placeholderStack.axis = .vertical
+        placeholderStack.alignment = .center
+        placeholderStack.spacing = 8
         
-        trackerHeaderLabel.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Констрейнты для навигационной панели
-        trackerHeaderLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        trackerHeaderLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 88).isActive = true
-        
-        trackerHeaderLabel.heightAnchor.constraint(equalToConstant: 41).isActive = true
-        trackerHeaderLabel.widthAnchor.constraint(equalToConstant: 254).isActive = true
+        placeholderStack.addArrangedSubview(placeholderImage)
+        placeholderStack.addArrangedSubview(placeholderLabel)
     }
-        
+    
     func setupPlusButton() {
         
-        let addTrackerUIButton = UIButton.systemButton(
-            with: UIImage(named: "PlusButton")!,
-            target: self, action: #selector(didTapAddTrackerButton))
-        
+        addTrackerUIButton.tintColor = .black
         view.addSubview(addTrackerUIButton)
         
         addTrackerUIButton.translatesAutoresizingMaskIntoConstraints = false
         
-        // Констрейнты для навигационной панели
-        addTrackerUIButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        addTrackerUIButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 45).isActive = true
-        
+        addTrackerUIButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
+        addTrackerUIButton.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 13).isActive = true
         addTrackerUIButton.heightAnchor.constraint(equalToConstant: 18).isActive = true
         addTrackerUIButton.widthAnchor.constraint(equalToConstant: 19).isActive = true
-           
+    }
+    
+    func setupTrackersHeader() {
+        
+        trackerHeaderLabel.text = "Трекеры"
+        trackerHeaderLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
+        view.addSubview(trackerHeaderLabel)
+        
+        trackerHeaderLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        trackerHeaderLabel.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
+        trackerHeaderLabel.topAnchor.constraint(equalTo: addTrackerUIButton.bottomAnchor, constant: 13).isActive = true
+        trackerHeaderLabel.heightAnchor.constraint(equalToConstant: 41).isActive = true
+        trackerHeaderLabel.widthAnchor.constraint(equalToConstant: 254).isActive = true
     }
     
     func setupDatePicker() {
@@ -75,73 +105,68 @@ final class TrackerViewController: UIViewController {
         
         datePicker.preferredDatePickerStyle = .compact
         datePicker.datePickerMode = .date
-        
-        //        myNavigationItem. = rightDatePicker
+        datePicker.locale = Locale(identifier: "ru_RU")
+        datePicker.addTarget(self, action: #selector(didChangedDatePicker), for: .valueChanged)
         
         view.addSubview(datePicker)
         
         datePicker.translatesAutoresizingMaskIntoConstraints = false
         
-        // Установите констрейнты для навигационной панели
-//        datePicker.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        datePicker.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16).isActive = true
-        datePicker.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 91).isActive = true
-        datePicker.heightAnchor.constraint(equalToConstant: 34).isActive = true
+        datePicker.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        datePicker.centerYAnchor.constraint(equalTo: trackerHeaderLabel.centerYAnchor).isActive = true
+        datePicker.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
+    }
+    
+    @objc
+    func didChangedDatePicker(_ sender: UIDatePicker) {
+        currentDate = sender.date
+        collectionView.reloadData()
     }
     
     func setupSearchTextField() {
         
-        let searchTextField = UISearchTextField()
-        
+        searchTextField.placeholder = "Поиск"
         view.addSubview(searchTextField)
         
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
         
-        // Установите констрейнты для навигационной панели
-        searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
-        searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -16).isActive = true
-        searchTextField.topAnchor.constraint(equalTo: trackerHeaderLabel.bottomAnchor, constant: 7).isActive = true
-        searchTextField.heightAnchor.constraint(equalToConstant: 36).isActive = true
+        searchTextField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 8).isActive = true
+        searchTextField.topAnchor.constraint(equalTo: trackerHeaderLabel.bottomAnchor).isActive = true
+        searchTextField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -8).isActive = true
     }
     
     func setupCollectionView() {
-        
-        let trackerCollectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-        trackerCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        trackerCollectionView.backgroundColor = .white
-        trackerCollectionView.register(
-            TrackerCell.self,
-            forCellWithReuseIdentifier: TrackerCell.identifier
-        )
-        trackerCollectionView.register(
-            TrackerCategoryLabel.self,
-            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
-            withReuseIdentifier: "header"
-        )
-        
-        view.addSubview(trackerCollectionView)
-        
-        trackerCollectionView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Установите констрейнты для навигационной панели
-        trackerCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-        trackerCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-        trackerCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        trackerCollectionView.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        view.addSubview(collectionView)
+        collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
+        collectionView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor).isActive = true
+        collectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
+        collectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
     }
-    
-    
-    
-    
-    
-    
     
     @objc
     func didTapAddTrackerButton() {
         let trackerCreationViewController = TrackerTypeViewController()
         
-//        trackerCreation.delegate = self
+        //        trackerCreation.delegate = self
         let navigationController = UINavigationController(rootViewController: trackerCreationViewController)
         present(navigationController, animated: true)
+    }
+}
+
+extension TrackerViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        TrackerData.shared.array.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCell.identifier, for: indexPath) as? TrackerCell
+        cell?.model = TrackerData.shared.array[indexPath.row]
+        return cell ?? UICollectionViewCell()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerHeader.identifier, for: indexPath) as! TrackerHeader
+        header.labelText = "Zagolovok"
+        return header
     }
 }
