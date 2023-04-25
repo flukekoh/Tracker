@@ -12,7 +12,7 @@ typealias Closure<T> = (T) -> ()
 
 final class ScheduleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate  {
     let daysOfTheWeek: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
-    // Массив для хранения состояний переключателей (включено или выключено)
+    
     var switchStates: [Bool] = [false, false, false, false, false, false, false]
     
     var onChoosed: Closure<[Weekday]>?
