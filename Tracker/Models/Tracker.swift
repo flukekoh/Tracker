@@ -16,15 +16,34 @@ struct Tracker {
     let name: String
     let color: UIColor
     let emoji: String
-    let schedule: [Weekday]?
+    var schedule: [Weekday]
 }
 
-enum Weekday: String {
-    case monday = "Понедельник"
-    case tuesday = "Вторник"
-    case wednesday = "Среда"
-    case thurshday = "Четверг"
-    case friday = "Пятница"
-    case saturday = "Суббота"
-    case sunday = "Воскресенье"
+enum Weekday: Int {
+    case sunday = 1
+    case monday
+    case tuesday
+    case wednesday
+    case thursday
+    case friday
+    case saturday
+    
+    var description: String {
+        switch self {
+        case .sunday:
+            return "Воскресенье"
+        case .monday:
+            return "Понедельник"
+        case .tuesday:
+            return "Вторник"
+        case .wednesday:
+            return "Среда"
+        case .thursday:
+            return "Четверг"
+        case .friday:
+            return "Пятница"
+        case .saturday:
+            return "Суббота"
+        }
+    }
 }

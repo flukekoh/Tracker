@@ -8,7 +8,11 @@
 import Foundation
 import UIKit
 
+typealias EmptyClosure = () -> ()
+
 class TrackerTypeViewController: UIViewController {
+    
+    var onDone: EmptyClosure?
     
     // MARK: - UI
     let habitUIButton: UIButton = {
@@ -56,6 +60,14 @@ class TrackerTypeViewController: UIViewController {
         setupView()
         setupHierarchy()
         setupLayout()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+    
+    deinit {
+        onDone?()
     }
     
     // MARK: - Setups

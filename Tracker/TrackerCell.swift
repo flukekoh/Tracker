@@ -34,7 +34,7 @@ final class TrackerCell: UICollectionViewCell {
     
     private lazy var emojiContentView: UIView = {
         let view = UIView()
-        view.layer.cornerRadius = 15
+        view.layer.cornerRadius = 12
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -68,7 +68,7 @@ final class TrackerCell: UICollectionViewCell {
         button.setTitle("+", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         button.titleLabel?.textColor = .white
-        button.layer.cornerRadius = 23
+        button.layer.cornerRadius = 17
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -108,33 +108,43 @@ final class TrackerCell: UICollectionViewCell {
             emojiLabel.centerXAnchor.constraint(equalTo: emojiContentView.centerXAnchor),
             emojiLabel.centerYAnchor.constraint(equalTo: emojiContentView.centerYAnchor),
             
-            emojiContentView.leadingAnchor.constraint(equalTo: mainContentView.leadingAnchor, constant: 8),
-            emojiContentView.topAnchor.constraint(equalTo: mainContentView.topAnchor, constant: 8),
-            emojiContentView.widthAnchor.constraint(equalToConstant: 30),
-            emojiContentView.heightAnchor.constraint(equalToConstant: 30),
+            emojiContentView.leadingAnchor.constraint(equalTo: mainContentView.leadingAnchor, constant: 12),
+            emojiContentView.topAnchor.constraint(equalTo: mainContentView.topAnchor, constant: 12),
+            emojiContentView.widthAnchor.constraint(equalToConstant: 24),
+            emojiContentView.heightAnchor.constraint(equalToConstant: 24),
             
-            taskLabel.leadingAnchor.constraint(equalTo: mainContentView.leadingAnchor, constant: 8),
-            taskLabel.bottomAnchor.constraint(equalTo: mainContentView.bottomAnchor, constant: -8),
+            taskLabel.leadingAnchor.constraint(equalTo: mainContentView.leadingAnchor, constant: 12),
+            taskLabel.trailingAnchor.constraint(equalTo: mainContentView.leadingAnchor, constant: -12),
+            taskLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8),
+            taskLabel.bottomAnchor.constraint(equalTo: mainContentView.bottomAnchor, constant: -12),
             
             mainContentView.leadingAnchor.constraint(equalTo: leadingAnchor),
             mainContentView.trailingAnchor.constraint(equalTo: trailingAnchor),
             mainContentView.topAnchor.constraint(equalTo: topAnchor),
-            mainContentView.heightAnchor.constraint(equalToConstant: 150),
+            mainContentView.heightAnchor.constraint(equalToConstant: 90),
             
-            daysCountLabel.topAnchor.constraint(equalTo: mainContentView.bottomAnchor, constant: 10),
-            daysCountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            daysCountLabel.topAnchor.constraint(equalTo: mainContentView.bottomAnchor, constant: 16),
+            daysCountLabel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+            daysCountLabel.trailingAnchor.constraint(equalTo: button.leadingAnchor, constant: 8),
             daysCountLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8),
             
-            button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -8),
+            button.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
             button.centerYAnchor.constraint(equalTo: daysCountLabel.centerYAnchor),
-            button.widthAnchor.constraint(equalToConstant: 45),
-            button.heightAnchor.constraint(equalToConstant: 45)
+            button.widthAnchor.constraint(equalToConstant: 34),
+            button.heightAnchor.constraint(equalToConstant: 34)
         ])
     }
     
     // MARK: - Actions
     
     @objc private func buttonTapped() {
+        if true {
+            button.setImage(UIImage(systemName: "checkmark"), for: .normal)
+            button.layer.opacity = 0.3
+        } else {
+            button.setImage(UIImage(systemName: "plus"), for: .normal)
+            button.layer.opacity = 1
+        }
         counter += 1
     }
 }

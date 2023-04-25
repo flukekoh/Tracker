@@ -14,6 +14,9 @@ final class TrackerViewController: UIViewController {
     var currentDate: Date?
     var visibleCategories: [TrackerCategory]?
     
+    private var workArray = TrackerCategoryData.shared.array
+    private var onReload: EmptyClosure?
+    
     // MARK: - UI
     let trackerHeaderLabel: UILabel = {
         let trackerHeaderLabel = UILabel()
@@ -24,7 +27,7 @@ final class TrackerViewController: UIViewController {
         return trackerHeaderLabel
     }()
     
-    let addTrackerUIButton: UIButton = {
+    private lazy var addTrackerUIButton: UIButton = {
         let addTrackerUIButton = UIButton.systemButton(
             with: UIImage(named: "PlusButton")!,
             target: self, action: #selector(didTapAddTrackerButton))
@@ -34,8 +37,9 @@ final class TrackerViewController: UIViewController {
         return addTrackerUIButton
     }()
     
-    let searchTextField: UISearchTextField = {
+    private lazy var searchTextField: UISearchTextField = {
         let searchTextField = UISearchTextField()
+        searchTextField.delegate = self
         searchTextField.placeholder = "Поиск"
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
         return searchTextField
@@ -43,7 +47,7 @@ final class TrackerViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: (self.view.frame.width / 2) - 10, height: 200)
+        layout.itemSize = CGSize(width: (self.view.frame.width / 2) - 30, height: 142)
         layout.sectionInset = UIEdgeInsets(top: 5, left: 5, bottom: 0, right: 5)
         layout.headerReferenceSize = CGSize(width: self.view.frame.width, height: 50)
         let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -87,7 +91,7 @@ final class TrackerViewController: UIViewController {
         return placeholderStack
     }()
     
-    let datePicker: UIDatePicker = {
+    private lazy var datePicker: UIDatePicker = {
         
         let datePicker = UIDatePicker()
         
@@ -109,6 +113,18 @@ final class TrackerViewController: UIViewController {
         setupLayout()
         
         setupPlaceholderImage()
+        
+        onReload = {
+            self.workArray = TrackerCategoryData.shared.array
+            self.collectionView.reloadData()
+        }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        collectionView.reloadData()
+        print(workArray)
     }
     
     // MARK: - Setups
@@ -167,13 +183,43 @@ final class TrackerViewController: UIViewController {
     
     @objc
     func didChangedDatePicker(_ sender: UIDatePicker) {
-        currentDate = sender.date
+        let selectedDate = sender.date
+        
+        let calendar = Calendar.current
+        let weekday = calendar.component(.weekday, from: selectedDate)
+        if let selectedWeekday = Weekday(rawValue: weekday) {
+            updateCollectionViewWithWeekday(selectedWeekday)
+        }
+    }
+    
+    func updateCollectionViewWithWeekday(_ selectedWeekday: Weekday) {
+        // Создаем новый массив, содержащий только элементы, соответствующие выбранному дню недели
+        workArray = TrackerCategoryData.shared.array
+        
+        var temporary = [TrackerCategory]()
+        
+        for var item in workArray {
+            
+            let filteredTrackers = item.trackers.filter { $0.schedule.contains(where: { $0 == selectedWeekday }) }
+            
+            if !filteredTrackers.isEmpty {
+                item.trackers = filteredTrackers
+            }
+            temporary.append(item)
+        }
+        
+        workArray = temporary
+        // Обновляем отображение коллекции
         collectionView.reloadData()
     }
     
     @objc
     func didTapAddTrackerButton() {
         let trackerCreationViewController = TrackerTypeViewController()
+        
+        trackerCreationViewController.onDone = {
+            self.onReload?()
+        }
         
         //        trackerCreation.delegate = self
         let navigationController = UINavigationController(rootViewController: trackerCreationViewController)
@@ -182,19 +228,64 @@ final class TrackerViewController: UIViewController {
 }
 
 extension TrackerViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        workArray.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        TrackerData.shared.array.count
+        workArray[section].trackers.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: TrackerCell.identifier, for: indexPath) as? TrackerCell
-        cell?.model = TrackerData.shared.array[indexPath.row]
+        cell?.model = workArray[indexPath.section].trackers[indexPath.row]
         return cell ?? UICollectionViewCell()
     }
     
     func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
         let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: TrackerHeader.identifier, for: indexPath) as! TrackerHeader
-        header.labelText = "Zagolovok"
+        switch indexPath.section {
+        case 0:
+            header.labelText = workArray[indexPath.section].title
+        case 1:
+            header.labelText = workArray[indexPath.section].title
+        case 2:
+            header.labelText = workArray[indexPath.section].title
+        default:
+            header.labelText = "Zagolovok"
+        }
+        
         return header
+    }
+}
+
+extension TrackerViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let text = textField.text else { return true }
+        if text != "" {
+            
+            workArray = TrackerCategoryData.shared.array
+        } else {
+            let newString = (text as NSString).replacingCharacters(in: range, with: string)
+            
+            var temporary = [TrackerCategory]()
+            
+            for var item in workArray {
+                
+//                let filteredData = workArray.filter { $0.name.contains(newString) }
+                
+                let filteredTrackers = item.trackers.filter { $0.name.contains(newString) }
+                
+//                if !filteredTrackers.isEmpty {
+                    item.trackers = filteredTrackers
+//                }
+                temporary.append(item)
+            }
+            
+            workArray = temporary
+        }
+        
+        collectionView.reloadData()
+        return true
     }
 }

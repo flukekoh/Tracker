@@ -8,10 +8,15 @@
 import Foundation
 import UIKit
 
+typealias Closure<T> = (T) -> ()
+
 final class ScheduleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate  {
-    let daysOfTheWeek = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота", "Воскресенье"]
+    let daysOfTheWeek: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     // Массив для хранения состояний переключателей (включено или выключено)
     var switchStates: [Bool] = [false, false, false, false, false, false, false]
+    
+    var onChoosed: Closure<[Weekday]>?
+    private var resultArray = [Weekday]()
     
     // MARK: - UI
     var weekdaysTableView: UITableView = {
@@ -84,6 +89,9 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
     @objc
     func didTapConfirmButton() {
         print("make smth")
+        dismiss(animated: true) {
+            self.onChoosed?(self.resultArray)
+        }
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -98,12 +106,13 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
         // Устанавливаем текст для ячейки с названием дня недели
-        cell.textLabel?.text = daysOfTheWeek[indexPath.row]
+        cell.textLabel?.text = daysOfTheWeek[indexPath.row].description
         
         // Создаем переключатель (switch)
         let switchView = UISwitch(frame: .zero)
-        switchView.isOn = switchStates[indexPath.row]
-        switchView.addTarget(self, action: #selector(switchChanged(_:)), for: .valueChanged)
+        
+        switchView.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
+        switchView.tag = indexPath.row
         
         // Устанавливаем переключатель в качестве accessory view для ячейки
         cell.accessoryView = switchView
@@ -124,14 +133,19 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
     // MARK: - Private methods
     
     // Обработчик события изменения состояния переключателя
-    @objc private func switchChanged(_ sender: UISwitch) {
-        //        guard let cell = sender.superview as? UITableViewCell,
-        //              let indexPath = tableView.indexPath(for: cell) else {
-        //            return
-        //        }
-        //
-        //        // Обновляем состояние переключателя в массиве
-        //        switchStates[indexPath.row] = sender.isOn
+    @objc
+    func switchChanged(_ sender: UISwitch) {
+        // Получите индекс строки, в которой находится UISwitch
+        let row = sender.tag
+        // Обновите массив switchValues с новым значением UISwitch
+        switchStates[row] = sender.isOn
+        
+        if sender.isOn {
+            resultArray.append(daysOfTheWeek[row])
+            
+        } else {
+            resultArray.removeAll(where: { $0 == daysOfTheWeek[row] })
+        }
     }
 }
 

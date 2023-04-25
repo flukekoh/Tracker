@@ -25,6 +25,12 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             return ["Категория"]
         }
     }
+    
+    private var onGetData: Closure<[Weekday]>?
+    private var schedule = [Weekday]()
+    
+    private var category = TrackerCategoryData.shared.array[0]
+    
     // MARK: - UI
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -64,8 +70,8 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         return cancelButton
     }()
     
-    let confirmButton: UIButton = {
-        let confirmButton = UIButton()
+    private lazy var confirmButton: UIButton = {
+        let confirmButton = UIButton(type: .system)
         
         confirmButton.backgroundColor = .gray
         confirmButton.setTitleColor(.white, for: .normal)
@@ -80,7 +86,6 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         confirmButton.layer.cornerRadius = 24
         
         confirmButton.addTarget(self, action: #selector(didTapConfirmButton), for: .touchUpInside)
-        confirmButton.isEnabled = false
         
         return confirmButton
     }()
@@ -113,6 +118,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         
         setupEmojis()
         setupColors()
+        setupObservation()
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -133,6 +139,12 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         //        }
     }
     // MARK: - Setups
+    
+    private func setupObservation() {
+        onGetData = { data in
+            self.schedule = data
+        }
+    }
     
     private func setupView() {
         view.backgroundColor = .white
@@ -237,14 +249,26 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     
     @objc
     func didTapConfirmButton() {
-        
+        let newTracker = Tracker(
+            id: UInt.random(in: 0..<100),
+            name: textField.text ?? "ERROR",
+            color: .cyan,
+            emoji: "😊",
+            schedule: schedule
+        )
+        TrackerCategoryData.shared.array[0].trackers.append(newTracker)
+        dismiss(animated: true)
     }
     
     @objc
     func scheduleUIButtonTapped() {
         let scheduleViewController = ScheduleViewController()
-        let navController = UINavigationController(rootViewController: scheduleViewController)
-        self.navigationController?.pushViewController(scheduleViewController, animated: true)
+        
+        scheduleViewController.onChoosed = { result in
+            self.onGetData?(result)
+        }
+        
+        self.navigationController?.present(scheduleViewController, animated: true)
         
     }
 }

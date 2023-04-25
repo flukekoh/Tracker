@@ -26,6 +26,7 @@
 		A2E98EA929E175FE008D6FD4 /* ScheduleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E98EA829E175FE008D6FD4 /* ScheduleViewController.swift */; };
 		A2E98EAB29EEE344008D6FD4 /* TrackerHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E98EAA29EEE344008D6FD4 /* TrackerHeader.swift */; };
 		A2E98EAD29EEED7E008D6FD4 /* TrackerDataSIngleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E98EAC29EEED7E008D6FD4 /* TrackerDataSIngleton.swift */; };
+		A2E98EAF29EFF03A008D6FD4 /* TrackerRecordDataSingleton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E98EAE29EFF03A008D6FD4 /* TrackerRecordDataSingleton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		A2E98EA829E175FE008D6FD4 /* ScheduleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleViewController.swift; sourceTree = "<group>"; };
 		A2E98EAA29EEE344008D6FD4 /* TrackerHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerHeader.swift; sourceTree = "<group>"; };
 		A2E98EAC29EEED7E008D6FD4 /* TrackerDataSIngleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerDataSIngleton.swift; sourceTree = "<group>"; };
+		A2E98EAE29EFF03A008D6FD4 /* TrackerRecordDataSingleton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackerRecordDataSingleton.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,6 +112,7 @@
 				A2E98E9C29DD8149008D6FD4 /* TrackerCategory.swift */,
 				A2E98E9E29DD8181008D6FD4 /* TrackerRecord.swift */,
 				A2E98EAC29EEED7E008D6FD4 /* TrackerDataSIngleton.swift */,
+				A2E98EAE29EFF03A008D6FD4 /* TrackerRecordDataSingleton.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -188,6 +191,7 @@
 				A2E98EA129DEEAF9008D6FD4 /* TrackerCell.swift in Sources */,
 				A2E98E9D29DD8149008D6FD4 /* TrackerCategory.swift in Sources */,
 				A2E98E9629DD5420008D6FD4 /* TrackerViewController.swift in Sources */,
+				A2E98EAF29EFF03A008D6FD4 /* TrackerRecordDataSingleton.swift in Sources */,
 				A2E98EA329DEEB83008D6FD4 /* TrackerCategoryLabel.swift in Sources */,
 				A2E98E9829DD5441008D6FD4 /* StatisticsViewController.swift in Sources */,
 				A2E98EA929E175FE008D6FD4 /* ScheduleViewController.swift in Sources */,
