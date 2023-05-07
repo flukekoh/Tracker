@@ -12,14 +12,14 @@ protocol ScheduleViewControllerDelegate: AnyObject {
 }
 
 final class ScheduleViewController: UIViewController  {
-    let daysOfTheWeek: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
+    private let daysOfTheWeek: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     
-    var switchStates: [Bool] = [false, false, false, false, false, false, false]
+    private var switchStates: [Bool] = [false, false, false, false, false, false, false]
 
     private var resultArray = [Weekday]()
     weak var delegate: ScheduleViewControllerDelegate?
     // MARK: - UI
-    var weekdaysTableView: UITableView = {
+    private var weekdaysTableView: UITableView = {
         let weekdaysTableView = UITableView(frame: .zero, style: .insetGrouped)
  
         weekdaysTableView.isScrollEnabled = false
@@ -35,7 +35,7 @@ final class ScheduleViewController: UIViewController  {
         return weekdaysTableView
     }()
     
-    var confirmButton: UIButton = {
+    private lazy var confirmButton: UIButton = {
         var confirmButton = UIButton(type: .system)
         confirmButton.setTitle("Готово", for: .normal)
         confirmButton.backgroundColor = .black
@@ -86,7 +86,7 @@ final class ScheduleViewController: UIViewController  {
         ])
     }
     
-    func setupWeekSchedule() {
+    private func setupWeekSchedule() {
         
         weekdaysTableView.delegate = self
         weekdaysTableView.dataSource = self
@@ -96,14 +96,14 @@ final class ScheduleViewController: UIViewController  {
     }
     
     @objc
-    func didTapConfirmButton() {
+    private func didTapConfirmButton() {
         let weekdays = self.resultArray
         delegate?.didConfirm(weekdays)
         dismiss(animated: true) 
     }
 
     @objc
-    func switchChanged(_ sender: UISwitch) {
+    private func switchChanged(_ sender: UISwitch) {
         let row = sender.tag
         switchStates[row] = sender.isOn
         

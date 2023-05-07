@@ -124,7 +124,7 @@ final class TrackerCell: UICollectionViewCell {
         button.setImage(image, for: .normal)
     }
     
-    func pluralizeDays(_ count: Int) -> String {
+    private func pluralizeDays(_ count: Int) -> String {
         let remainder10 = count % 10
         let remainder100 = count % 100
         

@@ -20,9 +20,9 @@ protocol TrackerFormViewControllerDelegate: AnyObject {
 
 final class TrackerCreationViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
-    let choice: Choice
+    private let choice: Choice
     
-    var tableData: [String]? {
+    private var tableData: [String]? {
         switch choice {
         case .regular:
             return ["Категория", "Расписание"]
@@ -30,7 +30,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             return ["Категория"]
         }
     }
-
+    
     private var schedule = [Weekday]()
     
     private var category = TrackerCategoryData.shared.array[0]
@@ -42,7 +42,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         
         tableView.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
         tableView.layer.cornerRadius = 16
-
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .singleLine
@@ -54,7 +54,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     
     private lazy var textField: UITextField = {
         let textField = UITextField()
-
+        
         textField.placeholder = "Введите название трекера"
         textField.delegate = self
         textField.layer.cornerRadius = 16
@@ -63,14 +63,14 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         return textField
     }()
     
-    let cancelButton: UIButton = {
+    private let cancelButton: UIButton = {
         let cancelButton = UIButton()
         
         cancelButton.setTitleColor(.red, for: .normal)
         cancelButton.layer.borderColor = UIColor.red.cgColor
         cancelButton.layer.borderWidth = 1
         cancelButton.setTitle("Отменить", for: .normal)
-
+        
         cancelButton.setTitleColor(UIColor.red, for: .normal)
         cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         cancelButton.layer.cornerRadius = 24
@@ -86,9 +86,9 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         
         confirmButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
         confirmButton.setTitleColor(.white, for: .normal)
-
+        
         confirmButton.setTitle("Создать", for: .normal)
-
+        
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.setTitleColor(.white, for: .normal)
         confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -99,7 +99,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         return confirmButton
     }()
     
-    let buttonsStack: UIStackView = {
+    private let buttonsStack: UIStackView = {
         let buttonsStack = UIStackView()
         buttonsStack.translatesAutoresizingMaskIntoConstraints = false
         buttonsStack.spacing = 8
@@ -213,7 +213,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         case 1:
             //            guard let schedule = data.schedule else { return }
             let scheduleViewController = ScheduleViewController()
-                       scheduleViewController.delegate = self
+            scheduleViewController.delegate = self
             let navigationController = UINavigationController(rootViewController: scheduleViewController)
             present(navigationController, animated: true)
         default:
@@ -251,7 +251,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             emoji: "😊",
             schedule: schedule
         )
-
+        
         delegate?.didTapConfirmButton(categoryLabel: category.title, trackerToAdd: newTracker)
         dismiss(animated: true)
     }
@@ -263,7 +263,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         scheduleViewController.modalPresentationStyle = .fullScreen
         
         scheduleViewController.delegate = self
-//        self.navigationController?.present(scheduleViewController, animated: true)
+        //        self.navigationController?.present(scheduleViewController, animated: true)
         self.present(scheduleViewController, animated: true, completion: nil)
         
     }

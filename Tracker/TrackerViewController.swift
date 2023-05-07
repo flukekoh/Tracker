@@ -19,7 +19,7 @@ final class TrackerViewController: UIViewController {
     private var onReload: EmptyClosure?
     
     // MARK: - UI
-    let trackerHeaderLabel: UILabel = {
+    private let trackerHeaderLabel: UILabel = {
         let trackerHeaderLabel = UILabel()
         trackerHeaderLabel.text = "Трекеры"
         trackerHeaderLabel.font = UIFont.systemFont(ofSize: 34, weight: .bold)
@@ -64,7 +64,7 @@ final class TrackerViewController: UIViewController {
         return view
     }()
     
-    let placeholderImage: UIImageView = {
+    private let placeholderImage: UIImageView = {
         let placeholderImage = UIImageView()
         placeholderImage.translatesAutoresizingMaskIntoConstraints = false
         placeholderImage.image = UIImage(named: "NoTrackersImage")
@@ -72,7 +72,7 @@ final class TrackerViewController: UIViewController {
         return placeholderImage
     }()
     
-    let placeholderLabel: UILabel = {
+    private let placeholderLabel: UILabel = {
         let placeholderLabel = UILabel()
         placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
         placeholderLabel.font = UIFont.systemFont(ofSize: 12, weight: .medium)
@@ -82,7 +82,7 @@ final class TrackerViewController: UIViewController {
         return placeholderLabel
     }()
     
-    let placeholderStack: UIStackView = {
+    private let placeholderStack: UIStackView = {
         let placeholderStack = UIStackView()
         placeholderStack.translatesAutoresizingMaskIntoConstraints = false
         placeholderStack.axis = .vertical
@@ -142,7 +142,7 @@ final class TrackerViewController: UIViewController {
         }
     }
     
-    func reloadData() {
+    private func reloadData() {
         categories = TrackerCategoryData.shared.array
         didChangedDatePicker()
     }
@@ -199,7 +199,7 @@ final class TrackerViewController: UIViewController {
         ])
     }
     
-    func setupPlaceholderImage() {
+    private func setupPlaceholderImage() {
         placeholderStack.addArrangedSubview(placeholderImage)
         placeholderStack.addArrangedSubview(placeholderLabel)
         
@@ -207,7 +207,7 @@ final class TrackerViewController: UIViewController {
     }
     
     @objc
-    func didChangedDatePicker() {
+    private func didChangedDatePicker() {
         reloadVisibleCategories()
     }
     
@@ -247,7 +247,7 @@ final class TrackerViewController: UIViewController {
     }
         
     @objc
-    func didTapAddTrackerButton() {
+    private func didTapAddTrackerButton() {
         let trackerCreationViewController = TrackerTypeViewController()
         
         trackerCreationViewController.onDone = {

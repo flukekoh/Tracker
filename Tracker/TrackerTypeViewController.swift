@@ -15,7 +15,7 @@ class TrackerTypeViewController: UIViewController {
     var onDone: EmptyClosure?
     weak var delegate: TrackerViewController?
     // MARK: - UI
-    let habitUIButton: UIButton = {
+    private let habitUIButton: UIButton = {
         let habitUIButton = UIButton()
         habitUIButton.backgroundColor = .black
         habitUIButton.setTitle("Привычка", for: .normal)
@@ -29,7 +29,7 @@ class TrackerTypeViewController: UIViewController {
         return habitUIButton
     }()
     
-    let unregularEventUIButton: UIButton = {
+    private let unregularEventUIButton: UIButton = {
         let unregularEventUIButton = UIButton()
         unregularEventUIButton.backgroundColor = .black
         unregularEventUIButton.setTitle("Нерегулярное событие", for: .normal)
@@ -43,7 +43,7 @@ class TrackerTypeViewController: UIViewController {
         return unregularEventUIButton
     }()
     
-    let buttonsStack: UIStackView = {
+    private let buttonsStack: UIStackView = {
         let buttonsStack = UIStackView()
         buttonsStack.axis = .vertical
         buttonsStack.spacing = 16
@@ -72,19 +72,19 @@ class TrackerTypeViewController: UIViewController {
     
     // MARK: - Setups
     
-    func setupView() {
+    private func setupView() {
         view.backgroundColor = .white
         title = "Создание трекера"
     }
     
-    func setupHierarchy() {
+    private func setupHierarchy() {
         buttonsStack.addArrangedSubview(habitUIButton)
         buttonsStack.addArrangedSubview(unregularEventUIButton)
         
         view.addSubview(buttonsStack)
     }
     
-    func setupLayout() {
+    private func setupLayout() {
         NSLayoutConstraint.activate([
             habitUIButton.heightAnchor.constraint(equalToConstant: 60),
             
@@ -97,7 +97,7 @@ class TrackerTypeViewController: UIViewController {
     }
     
     @objc
-    func habitUIButtonTapped() {
+    private func habitUIButtonTapped() {
         let trackerCreationViewController = TrackerCreationViewController(choice: .regular)
         let navController = UINavigationController(rootViewController: trackerCreationViewController)
         trackerCreationViewController.navigationItem.hidesBackButton = true
