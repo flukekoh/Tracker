@@ -13,6 +13,11 @@ enum Choice {
     case unregular
 }
 
+protocol TrackerFormViewControllerDelegate: AnyObject {
+    func didTapCancelButton()
+    func didTapConfirmButton(categoryLabel: String, trackerToAdd: Tracker)
+}
+
 final class TrackerCreationViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
     let choice: Choice
@@ -25,17 +30,23 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             return ["Категория"]
         }
     }
-    
-    private var onGetData: Closure<[Weekday]>?
+
     private var schedule = [Weekday]()
     
     private var category = TrackerCategoryData.shared.array[0]
     
+    weak var delegate: TrackerFormViewControllerDelegate?
     // MARK: - UI
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
+        
+        tableView.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
+        tableView.layer.cornerRadius = 16
+
         tableView.delegate = self
         tableView.dataSource = self
+        tableView.separatorStyle = .singleLine
+        tableView.isScrollEnabled = false
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
@@ -43,7 +54,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     
     private lazy var textField: UITextField = {
         let textField = UITextField()
-        textField.borderStyle = .roundedRect
+
         textField.placeholder = "Введите название трекера"
         textField.delegate = self
         textField.layer.cornerRadius = 16
@@ -59,7 +70,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         cancelButton.layer.borderColor = UIColor.red.cgColor
         cancelButton.layer.borderWidth = 1
         cancelButton.setTitle("Отменить", for: .normal)
-        //        button.backgroundColor = color
+
         cancelButton.setTitleColor(UIColor.red, for: .normal)
         cancelButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
         cancelButton.layer.cornerRadius = 24
@@ -73,13 +84,11 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     private lazy var confirmButton: UIButton = {
         let confirmButton = UIButton(type: .system)
         
-        confirmButton.backgroundColor = .gray
+        confirmButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
         confirmButton.setTitleColor(.white, for: .normal)
-        confirmButton.layer.borderColor = UIColor.red.cgColor
-        confirmButton.layer.borderWidth = 1
+
         confirmButton.setTitle("Создать", for: .normal)
-        //        button.backgroundColor = color
-        
+
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.setTitleColor(.white, for: .normal)
         confirmButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
@@ -118,7 +127,6 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         
         setupEmojis()
         setupColors()
-        setupObservation()
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -126,25 +134,11 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         return true
     }
     
-    
-    
     @objc
     private func didChangedLabelTextField(_ sender: UITextField) {
-        //        guard let text = sender.text else { return }
-        //        data.label = text
-        //        if text.count > Constants.labelLimit {
-        //            isValidationMessageVisible = true
-        //        } else {
-        //            isValidationMessageVisible = false
-        //        }
+        
     }
     // MARK: - Setups
-    
-    private func setupObservation() {
-        onGetData = { data in
-            self.schedule = data
-        }
-    }
     
     private func setupView() {
         view.backgroundColor = .white
@@ -161,16 +155,12 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     }
     
     private func setupLayout() {
-        //        textField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16).isActive = true
-        //        textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24).isActive = true
-        //        textField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        //        textField.heightAnchor.constraint(equalToConstant: 75).isActive = true
         
         NSLayoutConstraint.activate([
-            textField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            textField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            textField.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             textField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
-            textField.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            textField.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            textField.heightAnchor.constraint(equalToConstant: 75),
             
             tableView.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
@@ -191,18 +181,23 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
         
-        // Получаем данные для текущей ячейки
         let data = tableData?[indexPath.row]
         
-        // Устанавливаем текст для ячейки с названием категории и расписанием
         guard let data = data else { return UITableViewCell() }
-        cell.textLabel?.text = "\(data)"
         
-        // Создаем кнопку "Подробнее"
+        cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
+        
+        cell.textLabel?.text = "\(data)"
+        cell.accessoryType = .disclosureIndicator
+        
+        if indexPath.row == 1 {
+            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: CGFloat.greatestFiniteMagnitude)
+        }
+        
         let button = UIButton(type: .system)
         button.setTitle("Подробнее", for: .normal)
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        cell.accessoryView = button
+        //        cell.accessoryView = button
         
         return cell
     }
@@ -218,7 +213,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         case 1:
             //            guard let schedule = data.schedule else { return }
             let scheduleViewController = ScheduleViewController()
-            //            scheduleViewController.delegate = self
+                       scheduleViewController.delegate = self
             let navigationController = UINavigationController(rootViewController: scheduleViewController)
             present(navigationController, animated: true)
         default:
@@ -239,7 +234,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     
     @objc
     func didTapCancelButton() {
-        
+        delegate?.didTapCancelButton()
     }
     
     @objc
@@ -256,7 +251,8 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             emoji: "😊",
             schedule: schedule
         )
-        TrackerCategoryData.shared.array[0].trackers.append(newTracker)
+
+        delegate?.didTapConfirmButton(categoryLabel: category.title, trackerToAdd: newTracker)
         dismiss(animated: true)
     }
     
@@ -264,11 +260,11 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     func scheduleUIButtonTapped() {
         let scheduleViewController = ScheduleViewController()
         
-        scheduleViewController.onChoosed = { result in
-            self.onGetData?(result)
-        }
+        scheduleViewController.modalPresentationStyle = .fullScreen
         
-        self.navigationController?.present(scheduleViewController, animated: true)
+        scheduleViewController.delegate = self
+//        self.navigationController?.present(scheduleViewController, animated: true)
+        self.present(scheduleViewController, animated: true, completion: nil)
         
     }
 }
@@ -276,5 +272,11 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
 extension TrackerCreationViewController {
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+    }
+}
+
+extension TrackerCreationViewController: ScheduleViewControllerDelegate {
+    func didConfirm(_ schedule: [Weekday]) {
+        self.schedule = schedule
     }
 }

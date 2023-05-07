@@ -100,7 +100,6 @@
 				A2D751F929CDAAC9004E8082 /* Assets.xcassets */,
 				A2D751FB29CDAAC9004E8082 /* LaunchScreen.storyboard */,
 				A2D751FE29CDAAC9004E8082 /* Info.plist */,
-				A2E98EAA29EEE344008D6FD4 /* TrackerHeader.swift */,
 			);
 			path = Tracker;
 			sourceTree = "<group>";
@@ -110,6 +109,7 @@
 			children = (
 				A2E98E9A29DD810B008D6FD4 /* Tracker.swift */,
 				A2E98E9C29DD8149008D6FD4 /* TrackerCategory.swift */,
+				A2E98EAA29EEE344008D6FD4 /* TrackerHeader.swift */,
 				A2E98E9E29DD8181008D6FD4 /* TrackerRecord.swift */,
 				A2E98EAC29EEED7E008D6FD4 /* TrackerDataSIngleton.swift */,
 				A2E98EAE29EFF03A008D6FD4 /* TrackerRecordDataSingleton.swift */,

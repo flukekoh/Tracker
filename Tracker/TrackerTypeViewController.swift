@@ -13,7 +13,7 @@ typealias EmptyClosure = () -> ()
 class TrackerTypeViewController: UIViewController {
     
     var onDone: EmptyClosure?
-    
+    weak var delegate: TrackerViewController?
     // MARK: - UI
     let habitUIButton: UIButton = {
         let habitUIButton = UIButton()
@@ -80,8 +80,7 @@ class TrackerTypeViewController: UIViewController {
     func setupHierarchy() {
         buttonsStack.addArrangedSubview(habitUIButton)
         buttonsStack.addArrangedSubview(unregularEventUIButton)
-        //        view.addSubview(habitUIButton)
-        //        view.addSubview(unregularEventUIButton)
+        
         view.addSubview(buttonsStack)
     }
     
@@ -101,12 +100,16 @@ class TrackerTypeViewController: UIViewController {
     func habitUIButtonTapped() {
         let trackerCreationViewController = TrackerCreationViewController(choice: .regular)
         let navController = UINavigationController(rootViewController: trackerCreationViewController)
+        trackerCreationViewController.navigationItem.hidesBackButton = true
+        trackerCreationViewController.delegate = delegate
         self.navigationController?.pushViewController(trackerCreationViewController, animated: true)
     }
     
     @objc private func unregularButtonTapped() {
         let trackerCreationViewController = TrackerCreationViewController(choice: .unregular)
         let navController = UINavigationController(rootViewController: trackerCreationViewController)
+        trackerCreationViewController.navigationItem.hidesBackButton = true
+        trackerCreationViewController.delegate = delegate
         self.navigationController?.pushViewController(trackerCreationViewController, animated: true)
     }
     

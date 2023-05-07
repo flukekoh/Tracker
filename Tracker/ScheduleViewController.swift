@@ -5,23 +5,32 @@
 //  Created by Артем Кохан on 08.04.2023.
 //
 
-import Foundation
 import UIKit
 
-typealias Closure<T> = (T) -> ()
+protocol ScheduleViewControllerDelegate: AnyObject {
+    func didConfirm(_ schedule: [Weekday])
+}
 
-final class ScheduleViewController: UIViewController, UITableViewDataSource, UITableViewDelegate  {
+final class ScheduleViewController: UIViewController  {
     let daysOfTheWeek: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     
     var switchStates: [Bool] = [false, false, false, false, false, false, false]
-    
-    var onChoosed: Closure<[Weekday]>?
+
     private var resultArray = [Weekday]()
-    
+    weak var delegate: ScheduleViewControllerDelegate?
     // MARK: - UI
     var weekdaysTableView: UITableView = {
         let weekdaysTableView = UITableView(frame: .zero, style: .insetGrouped)
-        
+ 
+        weekdaysTableView.isScrollEnabled = false
+        weekdaysTableView.rowHeight = 75
+        weekdaysTableView.layoutMargins = UIEdgeInsets.zero
+        weekdaysTableView.contentInset = UIEdgeInsets(top: -35, left: 0, bottom: 0, right: 0)
+        weekdaysTableView.layer.cornerRadius = 16
+
+        weekdaysTableView.separatorInset = UIEdgeInsets.zero
+
+        weekdaysTableView.backgroundColor = .white
         weekdaysTableView.translatesAutoresizingMaskIntoConstraints = false
         return weekdaysTableView
     }()
@@ -65,15 +74,15 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
     }
     private func setupLayout() {
         NSLayoutConstraint.activate([
+            weekdaysTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
+            weekdaysTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
+            weekdaysTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            weekdaysTableView.heightAnchor.constraint(equalToConstant: 525),
+            
             confirmButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             confirmButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             confirmButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16),
-            confirmButton.heightAnchor.constraint(equalToConstant: 60),
-            
-            weekdaysTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            weekdaysTableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 16),
-            weekdaysTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
-            weekdaysTableView.bottomAnchor.constraint(equalTo: confirmButton.topAnchor)
+            confirmButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
     
@@ -88,64 +97,54 @@ final class ScheduleViewController: UIViewController, UITableViewDataSource, UIT
     
     @objc
     func didTapConfirmButton() {
-        print("make smth")
-        dismiss(animated: true) {
-            self.onChoosed?(self.resultArray)
+        let weekdays = self.resultArray
+        delegate?.didConfirm(weekdays)
+        dismiss(animated: true) 
+    }
+
+    @objc
+    func switchChanged(_ sender: UISwitch) {
+        let row = sender.tag
+        switchStates[row] = sender.isOn
+        
+        if sender.isOn {
+            resultArray.append(daysOfTheWeek[row])
+        } else {
+            resultArray.removeAll(where: { $0 == daysOfTheWeek[row] })
         }
     }
-    
-    func numberOfSections(in tableView: UITableView) -> Int {
-        1
-    }
-    
+}
+
+// MARK: - UITableViewDataSource
+
+extension ScheduleViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return daysOfTheWeek.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-        
-        // Устанавливаем текст для ячейки с названием дня недели
+       
         cell.textLabel?.text = daysOfTheWeek[indexPath.row].description
-        
-        // Создаем переключатель (switch)
+        cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
+
         let switchView = UISwitch(frame: .zero)
         
         switchView.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         switchView.tag = indexPath.row
         
-        // Устанавливаем переключатель в качестве accessory view для ячейки
         cell.accessoryView = switchView
         
         return cell
     }
-    
-    // MARK: - UITableViewDelegate
-    
+}
+
+// MARK: - UITableViewDelegate
+
+extension ScheduleViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        70
-    }
-    
-    // MARK: - Private methods
-    
-    // Обработчик события изменения состояния переключателя
-    @objc
-    func switchChanged(_ sender: UISwitch) {
-        // Получите индекс строки, в которой находится UISwitch
-        let row = sender.tag
-        // Обновите массив switchValues с новым значением UISwitch
-        switchStates[row] = sender.isOn
-        
-        if sender.isOn {
-            resultArray.append(daysOfTheWeek[row])
-            
-        } else {
-            resultArray.removeAll(where: { $0 == daysOfTheWeek[row] })
-        }
-    }
 }
+
 

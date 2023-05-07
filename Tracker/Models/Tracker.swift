@@ -16,7 +16,7 @@ struct Tracker {
     let name: String
     let color: UIColor
     let emoji: String
-    var schedule: [Weekday]
+    let schedule: [Weekday]
 }
 
 enum Weekday: Int {

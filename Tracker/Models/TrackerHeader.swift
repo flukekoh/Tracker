@@ -26,6 +26,10 @@ final class TrackerHeader: UICollectionReusableView {
         return label
     }()
     
+    func configureHeader(title: String) {
+        label.text = title
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         addSubview(label)

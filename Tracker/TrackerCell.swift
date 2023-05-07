@@ -8,20 +8,19 @@
 import Foundation
 import UIKit
 
+protocol TrackerCellDelegate: AnyObject {
+    func completeTracker(id: UInt, at indexPath: IndexPath)
+    func uncompleteTracker(id: UInt, at indexPath: IndexPath)
+}
+
 final class TrackerCell: UICollectionViewCell {
     static let identifier = "TrackerCell"
     
-    var model: Tracker? {
-        didSet {
-            mainContentView.backgroundColor = model?.color
-            emojiContentView.backgroundColor = .white
-            taskLabel.text = model?.name
-            emojiLabel.text = model?.emoji
-            button.backgroundColor = model?.color
-        }
-    }
+    weak var delegate: TrackerCellDelegate?
     
-    private var counter = 0
+    private var isCompletedToday = false
+    private var trackerId: UInt?
+    private var indexPath: IndexPath?
     
     // MARK: - UI
     
@@ -35,6 +34,7 @@ final class TrackerCell: UICollectionViewCell {
     private lazy var emojiContentView: UIView = {
         let view = UIView()
         view.layer.cornerRadius = 12
+        view.backgroundColor = UIColor(red: 1, green: 1, blue: 1, alpha: 0.3)
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -49,7 +49,6 @@ final class TrackerCell: UICollectionViewCell {
     
     private lazy var daysCountLabel: UILabel = {
         let label = UILabel()
-        label.text = "\(counter) дней"
         label.textColor = .black
         label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -65,13 +64,26 @@ final class TrackerCell: UICollectionViewCell {
     private lazy var button: UIButton = {
         let button = UIButton(type: .system)
         button.tintColor = .white
-        button.setTitle("+", for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 20, weight: .bold)
         button.titleLabel?.textColor = .white
         button.layer.cornerRadius = 17
         button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
+    }()
+    
+    private let plusImage: UIImage = {
+        let pointSize = UIImage.SymbolConfiguration(pointSize: 11)
+        let image = UIImage(systemName: "plus", withConfiguration: pointSize) ?? UIImage()
+        
+        return image
+    }()
+    
+    private let doneImage: UIImage = {
+        let pointSize = UIImage.SymbolConfiguration(pointSize: 11)
+        let image = UIImage(systemName: "checkmark", withConfiguration: pointSize) ?? UIImage()
+        
+        return image
     }()
     
     // MARK: - LC
@@ -88,6 +100,42 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     // MARK: - Setups
+    func configure(with tracker: Tracker, isCompletedToday: Bool, completedDays: Int, indexPath: IndexPath) {
+        self.trackerId = tracker.id
+        self.isCompletedToday = isCompletedToday
+        self.indexPath = indexPath
+        
+        let color = tracker.color
+        
+        setupView()
+        setupHierarchy()
+        setupLayout()
+        
+        mainContentView.backgroundColor = color
+        button.backgroundColor = color
+        
+        taskLabel.text = tracker.name
+        emojiLabel.text = tracker.emoji
+        
+        let wordDay = pluralizeDays(completedDays)
+        daysCountLabel.text = "\(wordDay)"
+        
+        let image = isCompletedToday ? doneImage : plusImage
+        button.setImage(image, for: .normal)
+    }
+    
+    func pluralizeDays(_ count: Int) -> String {
+        let remainder10 = count % 10
+        let remainder100 = count % 100
+        
+        if remainder10 == 1 && remainder100 != 11 {
+            return "\(count) день"
+        } else if remainder10 >= 2 && remainder10 <= 4 && (remainder100 < 10 || remainder100 >= 20) {
+            return "\(count) дня"
+        } else {
+            return "\(count) дней"
+        }
+    }
     
     private func setupView() {
         backgroundColor = .clear
@@ -114,8 +162,7 @@ final class TrackerCell: UICollectionViewCell {
             emojiContentView.heightAnchor.constraint(equalToConstant: 24),
             
             taskLabel.leadingAnchor.constraint(equalTo: mainContentView.leadingAnchor, constant: 12),
-            taskLabel.trailingAnchor.constraint(equalTo: mainContentView.leadingAnchor, constant: -12),
-            taskLabel.topAnchor.constraint(equalTo: emojiLabel.bottomAnchor, constant: 8),
+            taskLabel.trailingAnchor.constraint(equalTo: mainContentView.trailingAnchor, constant: -12),
             taskLabel.bottomAnchor.constraint(equalTo: mainContentView.bottomAnchor, constant: -12),
             
             mainContentView.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -138,13 +185,15 @@ final class TrackerCell: UICollectionViewCell {
     // MARK: - Actions
     
     @objc private func buttonTapped() {
-        if true {
-            button.setImage(UIImage(systemName: "checkmark"), for: .normal)
-            button.layer.opacity = 0.3
-        } else {
-            button.setImage(UIImage(systemName: "plus"), for: .normal)
-            button.layer.opacity = 1
+        guard let trackerId = trackerId, let indexPath = indexPath else {
+            assertionFailure("No tracker Id or index")
+            return
         }
-        counter += 1
+        if isCompletedToday {
+            delegate?.uncompleteTracker(id: trackerId, at: indexPath)
+            
+        } else {
+            delegate?.completeTracker(id: trackerId, at: indexPath)
+        }
     }
 }
