@@ -14,6 +14,6 @@ import Foundation
  Не используйте такие типы, как Float или Date!
  */
 struct TrackerRecord {
-    let trackerId: UInt
+    let trackerId: UUID
     let completionDate: Date
 }

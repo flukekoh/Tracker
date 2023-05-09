@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 protocol TrackerCellDelegate: AnyObject {
-    func completeTracker(id: UInt, at indexPath: IndexPath)
-    func uncompleteTracker(id: UInt, at indexPath: IndexPath)
+    func completeTracker(id: UUID, at indexPath: IndexPath)
+    func uncompleteTracker(id: UUID, at indexPath: IndexPath)
 }
 
 final class TrackerCell: UICollectionViewCell {
@@ -19,7 +19,7 @@ final class TrackerCell: UICollectionViewCell {
     weak var delegate: TrackerCellDelegate?
     
     private var isCompletedToday = false
-    private var trackerId: UInt?
+    private var trackerId: UUID?
     private var indexPath: IndexPath?
     
     // MARK: - UI
@@ -50,7 +50,8 @@ final class TrackerCell: UICollectionViewCell {
     private lazy var daysCountLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+//        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
+        label.font = UIFont(name: "SFPro-Medium", size: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -120,8 +121,13 @@ final class TrackerCell: UICollectionViewCell {
         let wordDay = pluralizeDays(completedDays)
         daysCountLabel.text = "\(wordDay)"
         
-        let image = isCompletedToday ? doneImage : plusImage
-        button.setImage(image, for: .normal)
+        if isCompletedToday {
+            button.setImage(doneImage, for: .normal)
+            button.layer.opacity = 0.3
+        } else {
+            button.setImage(plusImage, for: .normal)
+            button.layer.opacity = 1
+        }
     }
     
     private func pluralizeDays(_ count: Int) -> String {

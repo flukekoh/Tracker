@@ -53,12 +53,13 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     }()
     
     private lazy var textField: UITextField = {
-        let textField = UITextField()
+        let textField = TextField()
         
         textField.placeholder = "Введите название трекера"
         textField.delegate = self
         textField.layer.cornerRadius = 16
         textField.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
+       
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -165,7 +166,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             tableView.topAnchor.constraint(equalTo: textField.bottomAnchor, constant: 24),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            tableView.heightAnchor.constraint(equalToConstant: 150),
+            tableView.heightAnchor.constraint(equalToConstant: CGFloat(integerLiteral: (tableData?.count ?? 0) * 75)),
             
             buttonsStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             buttonsStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
@@ -190,7 +191,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         cell.textLabel?.text = "\(data)"
         cell.accessoryType = .disclosureIndicator
         
-        if indexPath.row == 1 {
+        if (tableData?.count == 2 && indexPath.row == 1) || (tableData?.count == 1 && indexPath.row == 0) {
             cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: CGFloat.greatestFiniteMagnitude)
         }
         
@@ -245,10 +246,10 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     @objc
     func didTapConfirmButton() {
         let newTracker = Tracker(
-            id: UInt.random(in: 0..<100),
+            id: UUID(),
             name: textField.text ?? "ERROR",
-            color: .cyan,
-            emoji: "😊",
+            color: .systemTeal,
+            emoji: "😇",
             schedule: schedule
         )
         
@@ -278,5 +279,14 @@ extension TrackerCreationViewController {
 extension TrackerCreationViewController: ScheduleViewControllerDelegate {
     func didConfirm(_ schedule: [Weekday]) {
         self.schedule = schedule
+    }
+}
+
+class TextField: UITextField {
+    private let textPadding = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 41)
+
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        let rect = super.textRect(forBounds: bounds)
+        return rect.inset(by: textPadding)
     }
 }

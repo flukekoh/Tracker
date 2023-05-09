@@ -289,7 +289,7 @@ extension TrackerViewController: UICollectionViewDataSource, UICollectionViewDel
         return cell
     }
     
-    private func isTrackerCompletedToday(id: UInt) -> Bool {
+    private func isTrackerCompletedToday(id: UUID) -> Bool {
         completedTrackers.contains{ trackerRecord in
             let isSameDay = Calendar.current.isDate(trackerRecord.completionDate, inSameDayAs: datePicker.date)
             return trackerRecord.trackerId == id && isSameDay
@@ -309,14 +309,14 @@ extension TrackerViewController: UICollectionViewDataSource, UICollectionViewDel
 }
 
 extension TrackerViewController: TrackerCellDelegate {
-    func completeTracker(id: UInt, at indexPath: IndexPath) {
+    func completeTracker(id: UUID, at indexPath: IndexPath) {
         let trackerRecord = TrackerRecord(trackerId: id, completionDate: datePicker.date)
         completedTrackers.append(trackerRecord)
         
         collectionView.reloadItems(at: [indexPath])
     }
     
-    func uncompleteTracker(id: UInt, at indexPath: IndexPath) {
+    func uncompleteTracker(id: UUID, at indexPath: IndexPath) {
         completedTrackers.removeAll { trackerRecord in
             let isSameDay = Calendar.current.isDate(trackerRecord.completionDate, inSameDayAs: datePicker.date)
             return trackerRecord.trackerId == id && isSameDay

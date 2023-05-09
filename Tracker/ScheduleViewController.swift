@@ -25,13 +25,13 @@ final class ScheduleViewController: UIViewController  {
         weekdaysTableView.isScrollEnabled = false
         weekdaysTableView.rowHeight = 75
         weekdaysTableView.layoutMargins = UIEdgeInsets.zero
-        weekdaysTableView.contentInset = UIEdgeInsets(top: -35, left: 0, bottom: 0, right: 0)
+        weekdaysTableView.contentInset = UIEdgeInsets(top: -36, left: 0, bottom: 0, right: 0)
+       
         weekdaysTableView.layer.cornerRadius = 16
-
-        weekdaysTableView.separatorInset = UIEdgeInsets.zero
 
         weekdaysTableView.backgroundColor = .white
         weekdaysTableView.translatesAutoresizingMaskIntoConstraints = false
+        
         return weekdaysTableView
     }()
     
@@ -77,7 +77,7 @@ final class ScheduleViewController: UIViewController  {
             weekdaysTableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             weekdaysTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 16),
             weekdaysTableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            weekdaysTableView.heightAnchor.constraint(equalToConstant: 525),
+            weekdaysTableView.heightAnchor.constraint(equalToConstant: 523),
             
             confirmButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             confirmButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -127,8 +127,10 @@ extension ScheduleViewController: UITableViewDataSource {
        
         cell.textLabel?.text = daysOfTheWeek[indexPath.row].description
         cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
-
+        
+        cell.separatorInset = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
         let switchView = UISwitch(frame: .zero)
+        
         
         switchView.addTarget(self, action: #selector(switchChanged), for: .valueChanged)
         switchView.tag = indexPath.row
