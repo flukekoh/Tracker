@@ -76,19 +76,19 @@ enum Weekday: String, CaseIterable, Comparable {
     var shortForm: String {
         switch self {
         case .monday:
-            return "Понедельник"
+            return "Пн"
         case .tuesday:
-            return "Вторник"
+            return "Вт"
         case .wednesday:
-            return "Среда"
+            return "Ср"
         case .thursday:
-            return "Четверг"
+            return "Чт"
         case .friday:
-            return "Пятница"
+            return "Пт"
         case .saturday:
-            return "Суббота"
+            return "Сб"
         case .sunday:
-            return "Воскресение"
+            return "Вс"
         }
     }
     

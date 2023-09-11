@@ -116,7 +116,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     
     private var schedule = [Weekday]()
     
-    private var category = TrackerCategoryData.shared.array[0]
+    private var category: TrackerCategory?
     
     weak var delegate: TrackerFormViewControllerDelegate?
     // MARK: - UI
@@ -130,7 +130,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         tableView.dataSource = self
         tableView.separatorStyle = .singleLine
         tableView.isScrollEnabled = false
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
+        tableView.register(CustomCell.self, forCellReuseIdentifier: CustomCell.identifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         return tableView
     }()
@@ -337,27 +337,29 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        guard let customCell = tableView.dequeueReusableCell(withIdentifier: CustomCell.identifier) as? CustomCell
+        else { return UITableViewCell() }
+        
+        var position: CustomItem.Position
+        var value: String = ""
         
         let data = tableData?[indexPath.row]
         
-        guard let data = data else { return UITableViewCell() }
-        
-        cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
-        
-        cell.textLabel?.text = "\(data)"
-        cell.accessoryType = .disclosureIndicator
-        
-        if (tableData?.count == 2 && indexPath.row == 1) || (tableData?.count == 1 && indexPath.row == 0) {
-            cell.separatorInset = UIEdgeInsets(top: 0, left: 0, bottom: 0, right: CGFloat.greatestFiniteMagnitude)
+        if indexPath.row == 0 {
+            position = .first
+            value = category?.title ?? ""
+        } else {
+            position = .last
+            for dayitem in schedule {
+                value = value + ", \(dayitem.shortForm)"
+            }
+            if !schedule.isEmpty {
+                value.remove(at: value.startIndex)
+            }
         }
         
-        let button = UIButton(type: .system)
-        button.setTitle("Подробнее", for: .normal)
-        button.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
-        //        cell.accessoryView = button
-        
-        return cell
+        customCell.configure(label: tableData?[indexPath.row] ?? "", value: value, position: position)
+        return customCell
     }
     
     @objc
@@ -368,12 +370,17 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.row {
+        case 0:
+            let categoriesViewController = CategoriesViewController(selectedCategory: nil)
+            categoriesViewController.delegate = self
+            let navigationController = UINavigationController(rootViewController: categoriesViewController)
+            present(navigationController, animated: true)
         case 1:
-            //            guard let schedule = data.schedule else { return }
             let scheduleViewController = ScheduleViewController()
             scheduleViewController.delegate = self
             let navigationController = UINavigationController(rootViewController: scheduleViewController)
             present(navigationController, animated: true)
+            
         default:
             return
         }
@@ -410,6 +417,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
             completedDaysCount: 0,
             schedule: schedule
         )
+        guard let category = category else { return }
         delegate?.didTapConfirmButton(category: category, trackerToAdd: newTracker)
         dismiss(animated: true)
     }
@@ -435,6 +443,7 @@ extension TrackerCreationViewController {
 extension TrackerCreationViewController: ScheduleViewControllerDelegate {
     func didConfirm(_ schedule: [Weekday]) {
         self.schedule = schedule
+        tableView.reloadData()
     }
 }
 
@@ -483,6 +492,13 @@ extension TrackerCreationViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? SelectionCellProtocol else { return }
         cell.deselect()
+    }
+}
+extension TrackerCreationViewController: CategoriesViewControllerDelegate {
+    func didConfirm(_ category: TrackerCategory) {
+        self.category = category
+        tableView.reloadData()
+        dismiss(animated: true)
     }
 }
 
@@ -535,16 +551,16 @@ extension TrackerCreationViewController: UICollectionViewDelegateFlowLayout {
                 for: indexPath
             ) as? SelectionTitle
         else { return UICollectionReusableView() }
-
+        
         var label: String
         switch collectionView {
         case emojisCollection: label = "Emoji"
         case colorsCollection: label = "Цвет"
         default: label = ""
         }
-
+        
         view.configure(with: label)
-
+        
         return view
     }
     
@@ -559,7 +575,7 @@ extension TrackerCreationViewController: UICollectionViewDelegateFlowLayout {
             viewForSupplementaryElementOfKind: UICollectionView.elementKindSectionHeader,
             at: indexPath
         )
-
+        
         return headerView.systemLayoutSizeFitting(
             CGSize(
                 width: collectionView.frame.width,
