@@ -117,6 +117,8 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     private var schedule = [Weekday]()
     
     private var category: TrackerCategory?
+    private var emoji: String?
+    private var color: UIColor?
     
     weak var delegate: TrackerFormViewControllerDelegate?
     // MARK: - UI
@@ -412,8 +414,8 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         let newTracker = Tracker(
             id: UUID(),
             name: textField.text ?? "ERROR",
-            emoji: "😇",
-            color: .systemTeal,
+            emoji: emoji ?? "",
+            color: color ?? UIColor(),
             completedDaysCount: 0,
             schedule: schedule
         )
@@ -454,6 +456,11 @@ class TextField: UITextField {
         let rect = super.textRect(forBounds: bounds)
         return rect.inset(by: textPadding)
     }
+    
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        let rect = super.editingRect(forBounds: bounds)
+        return rect.inset(by: textPadding)
+    }
 }
 
 extension TrackerCreationViewController: UICollectionViewDataSource {
@@ -486,6 +493,11 @@ extension TrackerCreationViewController: UICollectionViewDataSource {
 extension TrackerCreationViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let cell = collectionView.cellForItem(at: indexPath) as? SelectionCellProtocol else { return }
+        switch collectionView {
+        case emojisCollection: emoji = emojis[indexPath.row]
+        case colorsCollection: color = colors[indexPath.row]
+        default: break
+        }
         cell.select()
     }
     

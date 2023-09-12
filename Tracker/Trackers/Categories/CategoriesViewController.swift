@@ -54,18 +54,18 @@ final class CategoriesViewController: UIViewController {
         return placeholderStack
     }()
     
-    private let addButton: UIButton = {
+    private lazy var addButton: UIButton = {
         let addButton = UIButton(type: .system)
         
-        addButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
+        addButton.backgroundColor = .black
         addButton.setTitleColor(.white, for: .normal)
         
-        addButton.setTitle("Создать", for: .normal)
+        addButton.setTitle("Добавить категорию", for: .normal)
         
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.setTitleColor(.white, for: .normal)
         addButton.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        addButton.layer.cornerRadius = 24
+        addButton.layer.cornerRadius = 16
         
         addButton.addTarget(self, action: #selector(didTapAddButton), for: .touchUpInside)
         
@@ -106,6 +106,10 @@ final class CategoriesViewController: UIViewController {
     private func setupHierarchy() {
         view.addSubview(categoriesTableView)
         view.addSubview(addButton)
+        
+        placeholderStack.addArrangedSubview(placeholderImage)
+        placeholderStack.addArrangedSubview(placeholderLabel)
+        
         view.addSubview(placeholderStack)
     }
     private func setupLayout() {
@@ -191,5 +195,4 @@ extension CategoriesViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.selectCategory(at: indexPath)
     }
-    
 }

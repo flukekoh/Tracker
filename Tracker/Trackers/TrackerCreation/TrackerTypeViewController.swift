@@ -21,7 +21,7 @@ class TrackerTypeViewController: UIViewController {
         habitUIButton.setTitle("Привычка", for: .normal)
         habitUIButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         habitUIButton.titleLabel?.textColor = .white
-        habitUIButton.layer.cornerRadius = 24
+        habitUIButton.layer.cornerRadius = 16
         habitUIButton.addTarget(self, action: #selector(habitUIButtonTapped), for: .touchUpInside)
         
         habitUIButton.translatesAutoresizingMaskIntoConstraints = false
@@ -35,7 +35,7 @@ class TrackerTypeViewController: UIViewController {
         unregularEventUIButton.setTitle("Нерегулярное событие", for: .normal)
         unregularEventUIButton.titleLabel?.font = UIFont.systemFont(ofSize: 16)
         unregularEventUIButton.titleLabel?.textColor = .white
-        unregularEventUIButton.layer.cornerRadius = 24
+        unregularEventUIButton.layer.cornerRadius = 16
         unregularEventUIButton.addTarget(self, action: #selector(unregularButtonTapped), for: .touchUpInside)
         
         unregularEventUIButton.translatesAutoresizingMaskIntoConstraints = false

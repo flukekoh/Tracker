@@ -37,7 +37,7 @@ final class CategoryCreationViewController: UIViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(.white, for: .normal)
         button.titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .medium)
-        button.layer.cornerRadius = 24
+        button.layer.cornerRadius = 16
         return button
     }()
     
@@ -54,13 +54,11 @@ final class CategoryCreationViewController: UIViewController {
             }
         }
     }
-
+    
     init(data: TrackerCategory.Data = TrackerCategory.Data()) {
         self.data = data
         
         super.init(nibName: nil, bundle: nil)
-        
-//        textField.text = data.label
     }
     
     required init?(coder: NSCoder) {
@@ -69,7 +67,7 @@ final class CategoryCreationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-     
+    
         setupView()
         setupHierarchy()
         setupLayout()

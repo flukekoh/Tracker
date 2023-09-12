@@ -50,19 +50,6 @@ final class TrackerCategoryStore: NSObject {
         let request = NSFetchRequest<TrackerCategoryCoreData>(entityName: "TrackerCategoryCoreData")
         request.predicate = NSPredicate(format: "%K == %@", #keyPath(TrackerCategoryCoreData.categoryId), id.uuidString)
         let category = try context.fetch(request)
-        
-        //Заглушка пока нет механизма категорий
-        if category.count == 0 {
-            let categoryCoreData = TrackerCategoryCoreData(context: context)
-            categoryCoreData.categoryId = id.uuidString
-            categoryCoreData.createdAt = Date()
-            categoryCoreData.title = "Домашний уют"
-            try context.save()
-            
-            let category = try context.fetch(request)
-            return category[0]
-        }
-        
         return category[0]
     }
     
