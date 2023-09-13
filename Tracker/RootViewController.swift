@@ -41,7 +41,7 @@ final class RootViewController: UIViewController {
                 guard let self else { return }
                 
                 self.isOnboardingCompleted = true
-
+                
                 self.removeController(onboardingViewController)
                 self.addController(tabBarController)
             }

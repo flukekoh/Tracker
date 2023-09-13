@@ -68,7 +68,7 @@ final class TrackerStore: NSObject {
         let color = uiColorMarshalling.color(from: colorHEX)
         let scheduleString = coreData.schedule
         let schedule = Weekday.decode(from: scheduleString)
-
+        
         return Tracker(id: id,
                        name: label,
                        emoji: emoji,

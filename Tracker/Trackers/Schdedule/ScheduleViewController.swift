@@ -15,20 +15,20 @@ final class ScheduleViewController: UIViewController  {
     private let daysOfTheWeek: [Weekday] = [.monday, .tuesday, .wednesday, .thursday, .friday, .saturday, .sunday]
     
     private var switchStates: [Bool] = [false, false, false, false, false, false, false]
-
+    
     private var resultArray = [Weekday]()
     weak var delegate: ScheduleViewControllerDelegate?
     // MARK: - UI
     private var weekdaysTableView: UITableView = {
         let weekdaysTableView = UITableView(frame: .zero, style: .insetGrouped)
- 
+        
         weekdaysTableView.isScrollEnabled = false
         weekdaysTableView.rowHeight = 75
         weekdaysTableView.layoutMargins = UIEdgeInsets.zero
         weekdaysTableView.contentInset = UIEdgeInsets(top: -36, left: 0, bottom: 0, right: 0)
-       
+        
         weekdaysTableView.layer.cornerRadius = 16
-
+        
         weekdaysTableView.backgroundColor = .white
         weekdaysTableView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -101,7 +101,7 @@ final class ScheduleViewController: UIViewController  {
         delegate?.didConfirm(weekdays)
         dismiss(animated: true) 
     }
-
+    
     @objc
     private func switchChanged(_ sender: UISwitch) {
         let row = sender.tag
@@ -124,7 +124,7 @@ extension ScheduleViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
-       
+        
         cell.textLabel?.text = daysOfTheWeek[indexPath.row].rawValue
         cell.backgroundColor = UIColor(red: 0.902, green: 0.91, blue: 0.922, alpha: 0.3)
         

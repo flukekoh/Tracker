@@ -9,12 +9,12 @@ import Foundation
 import UIKit
 
 final class TabBarController: UITabBarController {
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let trackerViewController = TrackerViewController()
-            
+        
         trackerViewController.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(systemName: "record.circle.fill"), selectedImage: nil)
         
         let statisticsViewController = StatisticsViewController()
