@@ -9,8 +9,8 @@ import Foundation
 import UIKit
 
 protocol TrackerCellDelegate: AnyObject {
-    func completeTracker(id: UUID, at indexPath: IndexPath)
-    func uncompleteTracker(id: UUID, at indexPath: IndexPath)
+    func completeTracker(of cell: TrackerCell, with tracker: Tracker)
+    func uncompleteTracker(of cell: TrackerCell, with tracker: Tracker)
 }
 
 final class TrackerCell: UICollectionViewCell {
@@ -19,8 +19,8 @@ final class TrackerCell: UICollectionViewCell {
     weak var delegate: TrackerCellDelegate?
     
     private var isCompletedToday = false
-    private var trackerId: UUID?
-    private var indexPath: IndexPath?
+    private var tracker: Tracker?
+    private var cell: TrackerCell?
     
     // MARK: - UI
     
@@ -50,7 +50,6 @@ final class TrackerCell: UICollectionViewCell {
     private lazy var daysCountLabel: UILabel = {
         let label = UILabel()
         label.textColor = .black
-//        label.font = UIFont.systemFont(ofSize: 16, weight: .bold)
         label.font = UIFont(name: "SFPro-Medium", size: 12)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -101,10 +100,10 @@ final class TrackerCell: UICollectionViewCell {
     }
     
     // MARK: - Setups
-    func configure(with tracker: Tracker, isCompletedToday: Bool, completedDays: Int, indexPath: IndexPath) {
-        self.trackerId = tracker.id
+    func configure(with tracker: Tracker, isCompletedToday: Bool, completedDays: Int, cell: TrackerCell) {
+        self.tracker = tracker
         self.isCompletedToday = isCompletedToday
-        self.indexPath = indexPath
+        self.cell = cell
         
         let color = tracker.color
         
@@ -188,18 +187,17 @@ final class TrackerCell: UICollectionViewCell {
         ])
     }
     
-    // MARK: - Actions
     
     @objc private func buttonTapped() {
-        guard let trackerId = trackerId, let indexPath = indexPath else {
+        guard let cell = cell, let tracker = tracker else {
             assertionFailure("No tracker Id or index")
             return
         }
         if isCompletedToday {
-            delegate?.uncompleteTracker(id: trackerId, at: indexPath)
+            delegate?.uncompleteTracker(of: cell, with: tracker)
             
         } else {
-            delegate?.completeTracker(id: trackerId, at: indexPath)
+            delegate?.completeTracker(of: cell, with: tracker)
         }
     }
 }
