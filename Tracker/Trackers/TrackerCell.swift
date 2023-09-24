@@ -17,6 +17,7 @@ final class TrackerCell: UICollectionViewCell {
     static let identifier = "TrackerCell"
     
     weak var delegate: TrackerCellDelegate?
+    private let analyticsService = AnalyticsService()
     
     private var isCompletedToday = false
     private var tracker: Tracker?
@@ -193,6 +194,12 @@ final class TrackerCell: UICollectionViewCell {
             assertionFailure("No tracker Id or index")
             return
         }
+        
+        analyticsService.report(event: "click", params: [
+            "screen": "Main",
+            "item": "track"
+        ])
+        
         if isCompletedToday {
             delegate?.uncompleteTracker(of: cell, with: tracker)
             
