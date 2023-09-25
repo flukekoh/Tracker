@@ -22,12 +22,12 @@ final class TrackerTests: XCTestCase {
     func testViewControllerLight() {
         let vc = TrackerViewController()
         
-        assertSnapshot(matching: vc, as: .image(traits: .init(userInterfaceStyle: .light)))
+        assertSnapshot(matching: vc, as: .image(traits: .init(userInterfaceStyle: .light))) // светлая тема
     }
     
     func testViewControllerDark() throws {
         let vc = TrackerViewController()
-        assertSnapshot(matching: vc, as: .image(traits: .init(userInterfaceStyle: .dark)))
+        assertSnapshot(matching: vc, as: .image(traits: .init(userInterfaceStyle: .dark))) // темная тема
     }
 
 }
