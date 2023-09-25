@@ -495,13 +495,25 @@ extension TrackerCreationViewController: UICollectionViewDataSource {
         switch collectionView {
         case emojisCollection:
             guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as? EmojiCell else { return UICollectionViewCell() }
-            let emoji = emojis[indexPath.row]
-            emojiCell.configure(with: emoji)
+            let colletionEmoji = emojis[indexPath.row]
+            emojiCell.configure(with: colletionEmoji)
+            
+            if colletionEmoji == emoji {
+                emojiCell.select()
+                emojisCollection.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
+            }
+            
             return emojiCell
         case colorsCollection:
             guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { return UICollectionViewCell() }
-            let color = colors[indexPath.row]
-            colorCell.configure(with: color)
+            let collectionColor = colors[indexPath.row]
+            colorCell.configure(with: collectionColor)
+            
+            if let color = color, UIColorMarshalling.makeHEX(from: collectionColor) == UIColorMarshalling.makeHEX(from: color) {
+                colorCell.select()
+                colorsCollection.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
+            }
+            
             return colorCell
         default:
             return UICollectionViewCell()

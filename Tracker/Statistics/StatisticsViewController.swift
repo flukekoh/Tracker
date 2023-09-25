@@ -9,6 +9,8 @@ import Foundation
 import UIKit
 
 final class StatisticsViewController: UIViewController {
+    var statisticsViewModel: StatisticsViewModel?
+    
     private let titleLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -53,8 +55,6 @@ final class StatisticsViewController: UIViewController {
     }()
     
     private let completedTrackersView = StatisticsView(name: "Трекеров завершено")
-    
-    var statisticsViewModel: StatisticsViewModel?
     private let trackerRecordStore = TrackerRecordStore()
 
     override func viewDidLoad() {
@@ -74,20 +74,6 @@ final class StatisticsViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         statisticsViewModel?.viewWillAppear()
-    }
-    
-    private func checkContent(with trackers: [TrackerRecord]) {
-        if trackers.isEmpty {
-            placeholderStack.isHidden = false
-            statisticsStack.isHidden = true
-        } else {
-            placeholderStack.isHidden = true
-            statisticsStack.isHidden = false
-        }
-    }
-    
-    private func setupCompletedTrackersBlock(with count: Int) {
-        completedTrackersView.setNumber(count)
     }
     
     func setupView() {
@@ -117,4 +103,17 @@ final class StatisticsViewController: UIViewController {
         ])
     }
     
+    private func checkContent(with trackers: [TrackerRecord]) {
+        if trackers.isEmpty {
+            placeholderStack.isHidden = false
+            statisticsStack.isHidden = true
+        } else {
+            placeholderStack.isHidden = true
+            statisticsStack.isHidden = false
+        }
+    }
+    
+    private func setupCompletedTrackersBlock(with count: Int) {
+        completedTrackersView.setNumber(count)
+    }
 }

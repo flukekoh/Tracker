@@ -118,9 +118,9 @@ final class TrackerCell: UICollectionViewCell {
         taskLabel.text = tracker.name
         emojiLabel.text = tracker.emoji
         
-        let wordDay = pluralizeDays(completedDays)
-        daysCountLabel.text = "\(wordDay)"
-        
+//        let wordDay = pluralizeDays(completedDays)
+//        daysCountLabel.text = "\(wordDay)"
+        daysCountLabel.text = String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: "Number of counted days"), completedDays)
         if isCompletedToday {
             button.setImage(doneImage, for: .normal)
             button.layer.opacity = 0.3
