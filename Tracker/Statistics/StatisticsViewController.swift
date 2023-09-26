@@ -50,6 +50,7 @@ final class StatisticsViewController: UIViewController {
     private let statisticsStack: UIStackView = {
         let stack = UIStackView()
         stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.isHidden = true
         stack.axis = .vertical
         return stack
     }()
@@ -99,7 +100,7 @@ final class StatisticsViewController: UIViewController {
         
             statisticsStack.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             statisticsStack.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            statisticsStack.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor)
+            statisticsStack.topAnchor.constraint(equalTo: titleLabel.safeAreaLayoutGuide.bottomAnchor, constant: 77)
         ])
     }
     

@@ -55,6 +55,17 @@ final class TrackerRecordStore: NSObject {
         delegate?.didUpdateRecords(completedTrackers)
     }
     
+    func removeAll() throws {
+        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+//        request.predicate = NSPredicate()
+        let records = try context.fetch(request)
+        
+        for recordToRemove in records {
+            context.delete(recordToRemove)
+        }
+        try context.save()
+    }
+    
     func loadCompletedTrackers() throws -> [TrackerRecord] {
         let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
         let recordsCoreData = try context.fetch(request)

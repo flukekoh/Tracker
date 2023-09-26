@@ -344,6 +344,13 @@ final class TrackerViewController: UIViewController {
                 "screen": "Main",
                 "item": "delete"
             ])
+            
+            if let recordToRemove = completedTrackers.first(where: { $0.trackerId == tracker.id }) {
+                try? trackerRecordStore.remove(recordToRemove)
+            }
+            
+//            try? trackerRecordStore.removeAll()
+            
             try? self.trackerStore.deleteTracker(tracker)
             reloadVisibleCategories()
         }
@@ -411,10 +418,10 @@ extension TrackerViewController: UICollectionViewDelegate, UICollectionViewDeleg
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         
-        let indexPath = indexPaths[0]
+        let indexPath = indexPaths[safe: 0]
         
         guard
-            let tracker = trackerStore.tracker(at: indexPath)
+            let indexPath = indexPath, let tracker = trackerStore.tracker(at: indexPath)
         else { return nil }
 
         return UIContextMenuConfiguration(actionProvider:  { actions in
