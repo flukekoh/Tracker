@@ -67,7 +67,7 @@ final class CategoryCreationViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-    
+        
         setupView()
         setupHierarchy()
         setupLayout()

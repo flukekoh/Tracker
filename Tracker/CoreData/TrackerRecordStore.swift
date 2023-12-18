@@ -55,10 +55,48 @@ final class TrackerRecordStore: NSObject {
         delegate?.didUpdateRecords(completedTrackers)
     }
     
+    func removeAll() throws {
+        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+//        request.predicate = NSPredicate()
+        let records = try context.fetch(request)
+        
+        for recordToRemove in records {
+            context.delete(recordToRemove)
+        }
+        try context.save()
+    }
+    
+    func loadCompletedTrackers() throws -> [TrackerRecord] {
+        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+        let recordsCoreData = try context.fetch(request)
+        let records = try recordsCoreData.map { try makeTrackerRecord(from: $0) }
+        return records
+    }
+    
     func loadCompletedTrackers(by date: Date) throws {
         let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
         request.returnsObjectsAsFaults = false
         request.predicate = NSPredicate(format: "%K == %@", #keyPath(TrackerRecordCoreData.completiondate), date as NSDate)
+        let recordsCoreData = try context.fetch(request)
+        let records = try recordsCoreData.map { try makeTrackerRecord(from: $0) }
+        completedTrackers = Set(records)
+        delegate?.didUpdateRecords(completedTrackers)
+    }
+    
+    func loadAllCompletedTrackers(by date: Date) throws {
+        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+        request.returnsObjectsAsFaults = false
+        request.predicate = NSPredicate(format: "%K == %@", #keyPath(TrackerRecordCoreData.completiondate), date as NSDate)
+        let recordsCoreData = try context.fetch(request)
+        let records = try recordsCoreData.map { try makeTrackerRecord(from: $0) }
+        completedTrackers = Set(records)
+        delegate?.didUpdateRecords(completedTrackers)
+    }
+    
+    func loadAllCompletedTrackers() throws {
+        let request = NSFetchRequest<TrackerRecordCoreData>(entityName: "TrackerRecordCoreData")
+        request.returnsObjectsAsFaults = false
+        request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [NSPredicate]())
         let recordsCoreData = try context.fetch(request)
         let records = try recordsCoreData.map { try makeTrackerRecord(from: $0) }
         completedTrackers = Set(records)

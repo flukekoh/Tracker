@@ -9,17 +9,20 @@ import Foundation
 import UIKit
 
 final class TabBarController: UITabBarController {
-        
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let trackerViewController = TrackerViewController()
-            
-        trackerViewController.tabBarItem = UITabBarItem(title: "Трекеры", image: UIImage(systemName: "record.circle.fill"), selectedImage: nil)
+        
+        trackerViewController.tabBarItem = UITabBarItem(title: NSLocalizedString("tabbar.trackers", comment: "Трекеры"), image: UIImage(systemName: "record.circle.fill"), selectedImage: nil)
         
         let statisticsViewController = StatisticsViewController()
         
-        statisticsViewController.tabBarItem = UITabBarItem(title: "Статистика", image: UIImage(systemName: "hare.fill"), selectedImage: nil)
+        let statisticsViewModel = StatisticsViewModel()
+        statisticsViewController.statisticsViewModel = statisticsViewModel
+        
+        statisticsViewController.tabBarItem = UITabBarItem(title: NSLocalizedString("tabbar.statistics", comment: "Статистика"), image: UIImage(systemName: "hare.fill"), selectedImage: nil)
         
         self.viewControllers = [trackerViewController, statisticsViewController]
     }

@@ -17,6 +17,7 @@ final class TrackerCell: UICollectionViewCell {
     static let identifier = "TrackerCell"
     
     weak var delegate: TrackerCellDelegate?
+    private let analyticsService = AnalyticsService()
     
     private var isCompletedToday = false
     private var tracker: Tracker?
@@ -117,9 +118,9 @@ final class TrackerCell: UICollectionViewCell {
         taskLabel.text = tracker.name
         emojiLabel.text = tracker.emoji
         
-        let wordDay = pluralizeDays(completedDays)
-        daysCountLabel.text = "\(wordDay)"
-        
+//        let wordDay = pluralizeDays(completedDays)
+//        daysCountLabel.text = "\(wordDay)"
+        daysCountLabel.text = String.localizedStringWithFormat(NSLocalizedString("numberOfDays", comment: "Number of counted days"), completedDays)
         if isCompletedToday {
             button.setImage(doneImage, for: .normal)
             button.layer.opacity = 0.3
@@ -193,6 +194,12 @@ final class TrackerCell: UICollectionViewCell {
             assertionFailure("No tracker Id or index")
             return
         }
+        
+        analyticsService.report(event: "click", params: [
+            "screen": "Main",
+            "item": "track"
+        ])
+        
         if isCompletedToday {
             delegate?.uncompleteTracker(of: cell, with: tracker)
             

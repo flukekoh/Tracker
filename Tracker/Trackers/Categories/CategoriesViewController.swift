@@ -149,7 +149,7 @@ extension CategoriesViewController: CategoriesViewModelDelegate {
     func didSelectCategory(_ category: TrackerCategory) {
         delegate?.didConfirm(category)
     }
-
+    
 }
 
 extension CategoriesViewController: CategoryCreationViewControllerDelegate {
@@ -181,7 +181,7 @@ extension CategoriesViewController: UITableViewDataSource {
         }
         
         categoryCell.configure(with: category.title, isSelected: isSelected, position: position)
-
+        
         return categoryCell
     }
 }

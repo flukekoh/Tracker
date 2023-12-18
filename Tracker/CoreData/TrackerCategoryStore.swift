@@ -35,7 +35,7 @@ final class TrackerCategoryStore: NSObject {
         try? fetchedResultsController.performFetch()
         return fetchedResultsController
     }()
-
+    
     convenience override init() {
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         try! self.init(context: context)
@@ -59,14 +59,14 @@ final class TrackerCategoryStore: NSObject {
             let id = UUID(uuidString: idString),
             let title = coreData.title
         else { throw StoreError.decodeError }
-       return TrackerCategory(id: id, title: title)
-
+        return TrackerCategory(id: id, title: title)
+        
     }
     
     @discardableResult
     func makeCategory(with title: String) throws -> TrackerCategory {
         let category = TrackerCategory(title: title)
-
+        
         let categoryCoreData = TrackerCategoryCoreData(context: context)
         categoryCoreData.categoryId = category.id.uuidString
         categoryCoreData.createdAt = Date()

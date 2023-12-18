@@ -9,7 +9,7 @@ import UIKit
 
 final class UIColorMarshalling {
     
-    func makeHEX(from color: UIColor) -> String {
+    static func makeHEX(from color: UIColor) -> String {
         let components = color.cgColor.components
         let r: CGFloat = components?[0] ?? 0.0
         let g: CGFloat = components?[1] ?? 0.0
@@ -22,7 +22,7 @@ final class UIColorMarshalling {
         )
     }
     
-    func color(from hex: String) -> UIColor {
+    static func color(from hex: String) -> UIColor {
         var rgbValue:UInt64 = 0
         Scanner(string: hex).scanHexInt64(&rgbValue)
         return UIColor(

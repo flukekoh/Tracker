@@ -72,6 +72,12 @@ extension UIColor {
         UIColor(named: "Color selection 17")!,
         UIColor(named: "Color selection 18")!,
     ]
+    
+    static let gradient = [
+        UIColor(named: "gBlue")!,
+        UIColor(named: "gGreen")!,
+        UIColor(named: "gRed")!,
+    ]
 }
 
 enum Choice {
@@ -79,14 +85,16 @@ enum Choice {
     case unregular
 }
 
-protocol TrackerFormViewControllerDelegate: AnyObject {
+protocol TrackerCreationViewControllerDelegate: AnyObject {
     func didTapCancelButton()
     func didTapConfirmButton(category: TrackerCategory, trackerToAdd: Tracker)
+    func didUpdateTracker(with data: Tracker.Data)
 }
 
 final class TrackerCreationViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate {
     
-    private let choice: Choice
+    let choice: Choice
+    private var isEdition = false
     
     private var tableData: [String]? {
         switch choice {
@@ -120,7 +128,7 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
     private var emoji: String?
     private var color: UIColor?
     
-    weak var delegate: TrackerFormViewControllerDelegate?
+    weak var delegate: TrackerCreationViewControllerDelegate?
     // MARK: - UI
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -205,7 +213,11 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         confirmButton.backgroundColor = UIColor(red: 0.682, green: 0.686, blue: 0.706, alpha: 1)
         confirmButton.setTitleColor(.white, for: .normal)
         
-        confirmButton.setTitle("Создать", for: .normal)
+        if isEdition {
+            confirmButton.setTitle("Сохранить", for: .normal)
+        } else {
+            confirmButton.setTitle("Создать", for: .normal)
+        }
         
         confirmButton.translatesAutoresizingMaskIntoConstraints = false
         confirmButton.setTitleColor(.white, for: .normal)
@@ -243,6 +255,21 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         super.init(nibName: nil, bundle: nil)
     }
     
+    init(
+        tracker: Tracker,
+        isEdition: Bool
+    ) {
+        self.choice = tracker.schedule == nil ? .unregular: .regular
+        self.category = tracker.category
+        self.emoji = tracker.emoji
+        self.color = tracker.color
+        self.isEdition = isEdition
+        
+        self.schedule = tracker.schedule ?? [Weekday]()
+        super.init(nibName: nil, bundle: nil)
+        self.textField.text = tracker.name
+    }
+    
     required init?(coder: NSCoder) {
         fatalError()
     }
@@ -253,8 +280,6 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         setupView()
         setupHierarchy()
         setupLayout()
-        setupEmojis()
-        setupColors()
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
@@ -262,15 +287,16 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         return true
     }
     
-    @objc
-    private func didChangedLabelTextField(_ sender: UITextField) {
-        
-    }
     // MARK: - Setups
     
     private func setupView() {
         view.backgroundColor = .white
-        title = "Новая привычка"
+        
+        if isEdition  {
+            title = "Редактирование привычки"
+        } else {
+            title = "Новая привычка"
+        }
     }
     
     private func setupHierarchy() {
@@ -364,11 +390,6 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         return customCell
     }
     
-    @objc
-    func buttonTapped() {
-        
-    }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
         switch indexPath.row {
@@ -392,35 +413,33 @@ final class TrackerCreationViewController: UIViewController, UITableViewDataSour
         75
     }
     
-    func setupEmojis(){
-        
-    }
-    func setupColors(){
-        
-    }
-    
     @objc
     func didTapCancelButton() {
         delegate?.didTapCancelButton()
     }
     
     @objc
-    func categoryUIButtonTapped() {
-        
-    }
-    
-    @objc
     func didTapConfirmButton() {
-        let newTracker = Tracker(
-            id: UUID(),
-            name: textField.text ?? "ERROR",
-            emoji: emoji ?? "",
-            color: color ?? UIColor(),
-            completedDaysCount: 0,
-            schedule: schedule
-        )
         guard let category = category else { return }
-        delegate?.didTapConfirmButton(category: category, trackerToAdd: newTracker)
+        
+        if isEdition {
+            delegate?.didUpdateTracker(with: Tracker.Data(name: textField.text ?? "ERROR",
+                                                          emoji: emoji ?? "",
+                                                          color: color ?? UIColor(),
+                                                          completedDaysCount: 0, isPinned: false,
+                                                          schedule: schedule, category: category))
+        } else {
+            let newTracker = Tracker(
+                id: UUID(),
+                name: textField.text ?? "ERROR",
+                emoji: emoji ?? "",
+                color: color ?? UIColor(),
+                completedDaysCount: 0, isPinned: false,
+                schedule: schedule, category: category
+            )
+            
+            delegate?.didTapConfirmButton(category: category, trackerToAdd: newTracker)
+        }
         dismiss(animated: true)
     }
     
@@ -476,13 +495,25 @@ extension TrackerCreationViewController: UICollectionViewDataSource {
         switch collectionView {
         case emojisCollection:
             guard let emojiCell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCell.identifier, for: indexPath) as? EmojiCell else { return UICollectionViewCell() }
-            let emoji = emojis[indexPath.row]
-            emojiCell.configure(with: emoji)
+            let colletionEmoji = emojis[indexPath.row]
+            emojiCell.configure(with: colletionEmoji)
+            
+            if colletionEmoji == emoji {
+                emojiCell.select()
+                emojisCollection.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
+            }
+            
             return emojiCell
         case colorsCollection:
             guard let colorCell = collectionView.dequeueReusableCell(withReuseIdentifier: ColorCell.identifier, for: indexPath) as? ColorCell else { return UICollectionViewCell() }
-            let color = colors[indexPath.row]
-            colorCell.configure(with: color)
+            let collectionColor = colors[indexPath.row]
+            colorCell.configure(with: collectionColor)
+            
+            if let color = color, UIColorMarshalling.makeHEX(from: collectionColor) == UIColorMarshalling.makeHEX(from: color) {
+                colorCell.select()
+                colorsCollection.selectItem(at: indexPath, animated: false, scrollPosition: .bottom)
+            }
+            
             return colorCell
         default:
             return UICollectionViewCell()
